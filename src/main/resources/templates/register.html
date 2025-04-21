@@ -36,7 +36,7 @@
       margin: 10px 0 5px;
     }
 
-    input {
+    input, select {
       width: 100%;
       padding: 10px;
       margin-bottom: 15px;
@@ -75,6 +75,11 @@
       color: red;
       margin-bottom: 20px;
     }
+
+    .verification-options {
+      margin-bottom: 15px;
+      text-align: left;
+    }
   </style>
 </head>
 <body>
@@ -89,7 +94,7 @@
 
   <form th:action="@{/register/send-code}" method="post" th:object="${user}">
     <label>Телефон:</label>
-    <input type="text" th:field="*{phone}" required>
+    <input type="text" th:field="*{phone}" required placeholder="+79XXXXXXXXX">
     <span th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></span>
 
     <label>Пароль:</label>
@@ -99,15 +104,22 @@
     <label>Telegram:</label>
     <input type="text" th:field="*{telegram}">
 
+    <!-- Выбор способа верификации -->
+    <div class="verification-options">
+      <label>Способ подтверждения:</label>
+      <select name="verificationType">
+        <option value="call">Звонок</option>
+        <option value="sms">SMS</option>
+      </select>
+    </div>
+
     <!-- Передаем значение ref из URL как скрытое поле -->
     <input type="hidden" th:field="*{referralLink}">
 
     <button type="submit">Отправить код</button>
   </form>
 
-
   <p>Уже есть аккаунт? <a th:href="@{/login}">Войти</a></p>
-
 </div>
 </body>
 </html>

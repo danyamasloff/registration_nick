@@ -62,10 +62,20 @@
 <body>
 <div class="register-container">
   <img class="logo" src="/static/uploads/Лого.png" alt="Логотип" />
-  <h2>Введите код из SMS</h2>
+  <h2>Подтверждение номера телефона</h2>
 
   <div th:if="${errorMessage}" class="error-message">
     <p th:text="${errorMessage}"></p>
+  </div>
+
+  <!-- Динамическое сообщение в зависимости от типа верификации -->
+  <div th:if="${verificationType == 'call'}">
+    <p>Мы отправили <strong>звонок</strong> на номер <strong th:text="${user.phone}"></strong>.</p>
+    <p>Пожалуйста, ответьте на звонок и прослушайте код подтверждения.</p>
+  </div>
+  <div th:if="${verificationType == 'sms' || verificationType == null}">
+    <p>Мы отправили <strong>SMS</strong> с кодом на номер <strong th:text="${user.phone}"></strong>.</p>
+    <p>Пожалуйста, введите полученный код.</p>
   </div>
 
   <form th:action="@{/register/verify}" method="post" th:object="${user}">
@@ -73,6 +83,7 @@
     <input type="hidden" th:field="*{password}">
     <input type="hidden" th:field="*{telegram}">
     <input type="hidden" th:field="*{referralLink}">
+    <input type="hidden" name="verificationType" th:value="${verificationType}">
 
     <label>Код подтверждения:</label>
     <input type="text" name="code" required placeholder="Например: 1234" />
