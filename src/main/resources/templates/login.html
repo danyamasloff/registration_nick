@@ -60,6 +60,53 @@
       background-color: #45a049;
     }
 
+    /* Стили для разделителя */
+    .divider {
+      display: flex;
+      align-items: center;
+      margin: 20px 0;
+    }
+
+    .divider:before,
+    .divider:after {
+      content: "";
+      flex: 1;
+      border-bottom: 1px solid #ccc;
+    }
+
+    .divider-text {
+      margin: 0 10px;
+      color: #666;
+    }
+
+    /* Стили для кнопки входа через Telegram */
+    .telegram-login {
+      margin: 20px 0;
+      text-align: center;
+    }
+
+    .telegram-btn {
+      background-color: #0088cc;
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      font-weight: bold;
+      text-decoration: none;
+      margin-bottom: 15px;
+    }
+
+    .telegram-btn svg {
+      margin-right: 10px;
+    }
+
+    .telegram-btn:hover {
+      background-color: #0077b5;
+    }
+
     p {
       margin-top: 15px;
     }
@@ -72,7 +119,14 @@
     a:hover {
       text-decoration: underline;
     }
+
+    .error-message {
+      color: #f44336;
+      margin-bottom: 15px;
+    }
   </style>
+  <!-- Скрипт для Telegram Login Widget -->
+  <script async src="https://telegram.org/js/telegram-widget.js?22"></script>
 </head>
 <body>
 <div class="login-container">
@@ -80,11 +134,33 @@
   <img class="logo" src="/static/uploads/Лого.png" alt="Логотип" />
 
   <h2>Вход в систему</h2>
+
+  <!-- Сообщение об ошибке -->
+  <div th:if="${param.error}" class="error-message">
+    <p>Неправильный логин или пароль</p>
+  </div>
+
+  <!-- Виджет входа через Telegram -->
+  <div class="telegram-login">
+    <script async
+            src="https://telegram.org/js/telegram-widget.js?22"
+            data-telegram-login="rszc_bot"
+            data-size="large"
+            data-auth-url="http://localhost:8090/telegram-callback"
+            data-request-access="write"></script>
+  </div>
+
+  <div class="divider">
+    <span class="divider-text">или</span>
+  </div>
+
   <form th:action="@{/login}" method="post">
     <label>Телефон: <input type="text" name="username" /></label><br>
     <label>Пароль: <input type="password" name="password" /></label><br>
     <button type="submit">Войти</button>
   </form>
+
+  <p>Еще нет аккаунта? <a th:href="@{/register}">Зарегистрироваться</a></p>
 </div>
 </body>
 </html>

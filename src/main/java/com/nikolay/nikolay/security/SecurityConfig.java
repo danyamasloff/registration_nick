@@ -9,6 +9,7 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+
 @Configuration
 public class SecurityConfig {
 
@@ -20,14 +21,16 @@ public class SecurityConfig {
         this.passwordEncoder = passwordEncoder;
     }
 
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .authenticationProvider(authenticationProvider()) // 👈 регистрируем кастомного провайдера
+                .authenticationProvider(authenticationProvider())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/", "/register/**", "/css/**", "/js/**", "/images/**", "/uploads/**", "/static/uploads/**", "/telegram-callback").permitAll()
+                        // Разрешаем доступ к URL для Telegram аутентификации и публичным ресурсам
+                        .requestMatchers("/", "/register/**", "/telegram/**", "/telegram-callback",
+                                "/css/**", "/js/**", "/images/**", "/uploads/**", "/static/**")
+                        .permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
@@ -46,16 +49,14 @@ public class SecurityConfig {
         return http.build();
     }
 
-    // 👇 Бин кастомного AuthenticationProvider
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(customUserDetailsService); // Подключаем кастомный UserDetailsService
-        authProvider.setPasswordEncoder(passwordEncoder); // Подключаем encoder для проверки пароля
+        authProvider.setUserDetailsService(customUserDetailsService);
+        authProvider.setPasswordEncoder(passwordEncoder);
         return authProvider;
     }
 
-    // Бин для AuthenticationManager (если нужен где-то отдельно)
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
         return authConfig.getAuthenticationManager();

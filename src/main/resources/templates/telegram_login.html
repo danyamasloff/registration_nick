@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Вход через Telegram</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-image: url("/static/uploads/фон.jpeg");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .login-container {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 40px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            width: 300px;
+        }
+
+        .logo {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+        }
+
+        .telegram-login {
+            margin: 20px 0;
+        }
+
+        .or-divider {
+            display: flex;
+            align-items: center;
+            margin: 20px 0;
+        }
+
+        .or-divider:before,
+        .or-divider:after {
+            content: "";
+            flex: 1;
+            border-bottom: 1px solid #ccc;
+        }
+
+        .or-divider-text {
+            margin: 0 10px;
+            color: #666;
+        }
+
+        .other-options {
+            margin-top: 20px;
+        }
+
+        .other-options a {
+            color: #007BFF;
+            text-decoration: none;
+            margin: 0 10px;
+        }
+
+        .other-options a:hover {
+            text-decoration: underline;
+        }
+    </style>
+    <!-- Скрипт для Telegram Login Widget -->
+    <script async src="https://telegram.org/js/telegram-widget.js?22"></script>
+</head>
+<body>
+<div class="login-container">
+    <img class="logo" src="/static/uploads/Лого.png" alt="Логотип" />
+    <h2>Вход через Telegram</h2>
+
+    <!-- Виджет входа через Telegram -->
+    <div class="telegram-login">
+        <script th:inline="javascript">
+            /*<![CDATA[*/
+            window.telegramCallback = function(user) {
+                // При необходимости добавьте обработку на клиенте
+                console.log('Получены данные пользователя от Telegram:', user);
+            };
+            /*]]>*/
+        </script>
+
+        <!-- Здесь размещается виджет Telegram Login -->
+        <div id="telegram-login">
+            <script th:inline="javascript">
+                /*<![CDATA[*/
+                document.addEventListener('DOMContentLoaded', function() {
+                    const botUsername = /*[[${botUsername}]]*/ 'your_bot';
+                    const redirectUri = /*[[${redirectUri}]]*/ '/telegram-callback';
+
+                    // Добавление виджета Telegram
+                    window.TelegramLoginWidget = new TelegramLoginWidget({
+                        authUrl: redirectUri,
+                        botName: botUsername,
+                        buttonSize: 'large',
+                        cornerRadius: 10,
+                        requestAccess: 'write',
+                        usePic: true,
+                        lang: 'ru'
+                    });
+
+                    // Добавляем виджет в DOM
+                    document.getElementById('telegram-login').appendChild(
+                        window.TelegramLoginWidget.getElement()
+                    );
+                });
+                /*]]>*/
+            </script>
+        </div>
+    </div>
+
+    <div class="or-divider">
+        <span class="or-divider-text">или</span>
+    </div>
+
+    <div class="other-options">
+        <a th:href="@{/login}">Войти с паролем</a>
+        <a th:href="@{/register}">Зарегистрироваться</a>
+    </div>
+</div>
+</body>
+</html>
