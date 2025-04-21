@@ -28,11 +28,21 @@ public class UserService {
         return userRepository.findByPhone(normalizePhoneNumber(phone));
     }
 
+    /**
+     * Находит пользователя по имени пользователя Telegram
+     * @param telegram имя пользователя Telegram (без @)
+     * @return Optional с найденным пользователем или пустой Optional
+     */
+    public Optional<User> findByTelegram(String telegram) {
+        return userRepository.findByTelegram(telegram);
+    }
+
     public void registerUser(User user) {
         // Нормализуем телефон перед сохранением
         user.setPhone(normalizePhoneNumber(user.getPhone()));
 
-        if (user.getPassword() != null && !user.getPassword().startsWith("$2a$")) {
+        // Хешируем пароль, если он не пустой и не захеширован
+        if (user.getPassword() != null && !user.getPassword().isEmpty() && !user.getPassword().startsWith("$2a$")) {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
         }
         userRepository.save(user);
