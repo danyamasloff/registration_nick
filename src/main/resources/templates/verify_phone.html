@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Подтверждение телефона</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-image: url("/static/uploads/фон.jpeg");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .verify-container {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 40px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            width: 300px;
+        }
+
+        .logo {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+        }
+
+        .error-message {
+            color: red;
+            margin-bottom: 15px;
+        }
+
+        .info {
+            margin-bottom: 20px;
+            font-size: 16px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            text-align: left;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+<div class="verify-container">
+    <img class="logo" src="/static/uploads/Лого.png" alt="Логотип" />
+
+    <h2>Подтверждение номера телефона</h2>
+
+    <div th:if="${errorMessage}" class="error-message">
+        <p th:text="${errorMessage}"></p>
+    </div>
+
+    <p class="info">Мы совершили звонок на номер <strong th:text="${phone}"></strong>.</p>
+    <p class="info">Пожалуйста, введите код подтверждения из звонка:</p>
+
+    <form th:action="@{/complete-registration/verify}" method="post">
+        <label for="code">Код подтверждения:</label>
+        <input type="text" id="code" name="code" required placeholder="Например: 1234" />
+
+        <button type="submit">Подтвердить</button>
+    </form>
+</div>
+</body>
+</html>
