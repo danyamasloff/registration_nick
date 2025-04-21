@@ -24,14 +24,44 @@ public class UserService {
     }
 
     public Optional<User> findByPhone(String phone) {
-        return userRepository.findByPhone(phone);
+        // Нормализуем номер телефона при поиске
+        return userRepository.findByPhone(normalizePhoneNumber(phone));
     }
 
     public void registerUser(User user) {
-        if (user.getPassword() != null && !user.getPassword().startsWith("$2a$")) { // Проверка, зашифрован ли пароль
+        // Нормализуем телефон перед сохранением
+        user.setPhone(normalizePhoneNumber(user.getPhone()));
+
+        if (user.getPassword() != null && !user.getPassword().startsWith("$2a$")) {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
         }
         userRepository.save(user);
     }
 
+    /**
+     * Нормализует номер телефона в соответствии с требованиями модели
+     * @param phone исходный номер телефона
+     * @return нормализованный номер в формате +XXXXXXXXXX
+     */
+    public String normalizePhoneNumber(String phone) {
+        if (phone == null) {
+            return null;
+        }
+
+        // Удаляем все нецифровые символы
+        String digits = phone.replaceAll("[^\\d]", "");
+
+        // Если номер начинается с 8 для России, заменяем на 7
+        if (digits.startsWith("8") && digits.length() == 11) {
+            digits = "7" + digits.substring(1);
+        }
+
+        // Проверяем длину и добавляем код страны 7 для номеров из 10 цифр
+        if (digits.length() == 10) {
+            digits = "7" + digits;
+        }
+
+        // Добавляем + в начало, чтобы соответствовать паттерну валидации
+        return "+" + digits;
+    }
 }
