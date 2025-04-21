@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta name="robots" content="noindex, nofollow">
     <title>Главная страница</title>
@@ -37,6 +38,8 @@
             border: 1px solid #ddd;
             margin-bottom: 10px;
             position: relative;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 5px;
         }
 
         .no-copy {
@@ -100,6 +103,31 @@
         .login-button:hover {
             background-color: #45a049;
         }
+
+        .registration-banner {
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px auto;
+            text-align: center;
+            max-width: 80%;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .register-button {
+            display: inline-block;
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        .register-button:hover {
+            background-color: #45a049;
+        }
     </style>
 </head>
 <body>
@@ -107,6 +135,13 @@
 <div class="container">
     <img class="logo" src="/static/uploads/Лого.png" alt="Логотип" />
     <h1>Инструкции к медицинским аппаратам</h1>
+
+    <!-- Используем стандартную проверку на анонимного пользователя -->
+    <div sec:authorize="isAnonymous()" class="registration-banner">
+        <h3>Для доступа к инструкциям требуется регистрация</h3>
+        <a th:href="@{/register}" class="register-button">Зарегистрироваться</a>
+    </div>
+
     <div th:each="instruction : ${instructions}" class="instruction">
         <h3 th:text="${instruction.title}"></h3>
         <a th:href="${instruction.href}" th:class="${instruction.available ? '' : 'locked-button'}">
