@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Редактирование инструкции</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      background-color: #343a40;
+      color: white;
+      padding: 20px;
+      margin: 0 0 20px;
+      text-align: center;
+    }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+    textarea {
+      height: 400px;
+      resize: vertical;
+    }
+    button {
+      background-color: #007bff;
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 15px;
+      width: 100%;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    a {
+      display: inline-block;
+      margin-top: 15px;
+      text-decoration: none;
+      color: #007bff;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
+  <script src="https://cdn.tiny.cloud/1/o3vc3mq5ssl5hcx35asrbhzsf8p70q8dh0wiew45w9vihmt4/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      tinymce.init({
+        selector: '#content',
+        height: 500,
+        menubar: false,
+        plugins: 'advlist autolink lists link image charmap preview anchor',
+        toolbar: 'undo redo | formatselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | image',
+        images_upload_url: '/admin/instructions/uploadImage',
+        automatic_uploads: true,
+        setup: function(editor) {
+          editor.on('init', function() {
+            document.getElementById('content').removeAttribute('required');
+          });
+        }
+      });
+
+      const form = document.querySelector("form");
+      if (form) {
+        form.addEventListener("submit", function(event) {
+          tinymce.triggerSave();
+          const content = document.getElementById('content');
+          if (!content.value.trim()) {
+            alert("Поле 'Содержимое' не должно быть пустым!");
+            event.preventDefault();
+          }
+        });
+      }
+    });
+  </script>
+</head>
+<body>
+<h1>Редактирование инструкции</h1>
+<div class="container">
+  <form th:action="@{/admin/instructions/save}" th:object="${instruction}" method="post" enctype="multipart/form-data">
+    <input type="hidden" th:field="*{id}">
+    <label>Название:</label>
+    <input type="text" th:field="*{title}" required>
+    <br>
+    <label>Содержимое:</label>
+    <textarea id="content" th:field="*{content}"></textarea>
+    <br>
+    <label>QR-код:</label>
+    <input type="text" th:field="*{qrCode}">
+    <br>
+    <button type="submit">Сохранить</button>
+  </form>
+  <a href="/admin/instructions">Назад</a>
+</div>
+</body>
+</html>

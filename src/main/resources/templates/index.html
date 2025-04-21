@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta name="robots" content="noindex, nofollow">
+    <title>Главная страница</title>
+    <style>
+        body {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            background-image: url("/static/uploads/фон.jpeg");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        img {
+            pointer-events: none;
+        }
+        .container {
+            width: 80%;
+            margin: auto;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .logo {
+            width: 135px;
+            height: 135px;
+            margin-bottom: 20px;
+        }
+
+        .instruction {
+            padding: 10px;
+            border: 1px solid #ddd;
+            margin-bottom: 10px;
+            position: relative;
+        }
+
+        .no-copy {
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+        }
+
+        .chat {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            border-radius: 5px;
+            color: white;
+            font-size: 14px;
+            z-index: 9999;
+        }
+
+        .chat a {
+            color: white;
+            text-decoration: none;
+            margin: 0 5px;
+        }
+
+        .chat a:hover {
+            text-decoration: underline;
+        }
+
+        .chat p {
+            margin: 5px 0;
+        }
+
+        .locked-button {
+            cursor: not-allowed;
+            color: grey;
+            text-decoration: none;
+        }
+
+        .lock-icon {
+            margin-left: 5px;
+            font-size: 1.2em;
+            color: grey;
+        }
+
+        .login-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 16px;
+        }
+
+        .login-button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+<a th:href="@{/login}" class="login-button">Войти</a>
+<div class="container">
+    <img class="logo" src="/static/uploads/Лого.png" alt="Логотип" />
+    <h1>Инструкции к медицинским аппаратам</h1>
+    <div th:each="instruction : ${instructions}" class="instruction">
+        <h3 th:text="${instruction.title}"></h3>
+        <a th:href="${instruction.href}" th:class="${instruction.available ? '' : 'locked-button'}">
+            Открыть
+            <span th:if="${!instruction.available}" class="lock-icon">🔒</span>
+        </a>
+    </div>
+</div>
+
+<div class="chat">
+    <p>Напишите нам в:</p>
+    <a href="https://wa.me/+79131200213" target="_blank">WhatsApp</a> |
+    <a href="https://t.me/Nshulgin" target="_blank">Telegram</a>
+</div>
+</body>
+</html>

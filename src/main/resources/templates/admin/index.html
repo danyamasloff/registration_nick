@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Админ-панель</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+    }
+    h1 {
+      background-color: #343a40;
+      color: white;
+      padding: 20px;
+      margin: 0;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 20px auto;
+      width: 300px;
+    }
+    li {
+      margin: 10px 0;
+    }
+    a {
+      display: block;
+      padding: 10px;
+      background-color: #007bff;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      transition: background 0.3s;
+    }
+    a:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+<h1>Админ-панель</h1>
+<ul>
+  <li><a href="/admin/instructions">Управление инструкциями</a></li>
+  <li><a href="/admin/users">Список пользователей</a></li>
+  <li><a href="/">Главная</a></li>
+</ul>
+</body>
+</html>

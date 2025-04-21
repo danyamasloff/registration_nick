@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta name="robots" content="noindex, nofollow">
+  <title th:text="${instruction.title}">Инструкция</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-image: url("/uploads/фон.jpeg");
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      padding: 20px;
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 980px;
+      background: rgba(255, 255, 255, 0.6); /* полупрозрачный фон */
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      overflow-y: auto;
+    }
+
+    .logo {
+      max-width: 150px;
+      height: auto;
+      margin-bottom: 15px;
+    }
+
+    .no-copy {
+      user-select: none;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+    }
+
+    .image-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 15px;
+    }
+
+    .image-container img {
+      max-width: 80px;
+      height: auto;
+      border-radius: 5px;
+      margin: 5px;
+      pointer-events: none;
+      -webkit-user-drag: none;
+      -moz-user-drag: none;
+      -ms-user-drag: none;
+      user-drag: none;
+    }
+
+    .back-button {
+      display: inline-block;
+      padding: 10px 15px;
+      margin-top: 20px;
+      background-color: #007bff;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      text-align: center;
+    }
+
+    .back-button:hover {
+      background-color: #0056b3;
+    }
+
+    @media (max-width: 460px) {
+      .container {
+        max-width: 460px;
+        padding: 15px;
+      }
+    }
+  </style>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      document.body.addEventListener('copy', function(e) {
+        e.preventDefault();
+      });
+
+      document.body.addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+      });
+    });
+  </script>
+</head>
+<body>
+<div class="container">
+  <img class="logo" src="/static/uploads/Лого.png" alt="Логотип" />
+  <h1 th:text="${instruction.title}"></h1>
+  <div class="no-copy" th:utext="${instruction.content}"></div>
+  <br><br>
+  <a href="/" class="back-button">Назад</a>
+</div>
+</body>
+</html>

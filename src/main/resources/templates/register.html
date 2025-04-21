@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Регистрация</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-image: url("/static/uploads/фон.jpeg");
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .register-container {
+      background: rgba(255, 255, 255, 0.8);
+      padding: 40px;
+      border-radius: 10px;
+      text-align: center;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      width: 300px;
+    }
+
+    .logo {
+      width: 120px;
+      height: 120px;
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin: 10px 0 5px;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    p {
+      margin-top: 15px;
+    }
+
+    a {
+      color: #007BFF;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .error-message {
+      color: red;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+<div class="register-container">
+  <img class="logo" src="/static/uploads/Лого.png" alt="Логотип" />
+
+  <h2>Регистрация</h2>
+
+  <div th:if="${errorMessage}" class="error-message">
+    <p th:text="${errorMessage}"></p>
+  </div>
+
+  <form th:action="@{/register/send-code}" method="post" th:object="${user}">
+    <label>Телефон:</label>
+    <input type="text" th:field="*{phone}" required>
+    <span th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></span>
+
+    <label>Пароль:</label>
+    <input type="password" th:field="*{password}" required>
+    <span th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></span>
+
+    <label>Telegram:</label>
+    <input type="text" th:field="*{telegram}">
+
+    <!-- Передаем значение ref из URL как скрытое поле -->
+    <input type="hidden" th:field="*{referralLink}">
+
+    <button type="submit">Отправить код</button>
+  </form>
+
+
+  <p>Уже есть аккаунт? <a th:href="@{/login}">Войти</a></p>
+
+</div>
+</body>
+</html>

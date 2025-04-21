@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Управление инструкциями</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      background-color: #343a40;
+      color: white;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      background: rgba(255, 255, 255, 0.85); /* прозрачный фон */
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .instruction {
+      border-bottom: 1px solid #ddd;
+      padding: 15px 0;
+    }
+    .instruction:last-child {
+      border-bottom: none;
+    }
+    .instruction-title {
+      font-weight: bold;
+      font-size: 1.1em;
+    }
+    .instruction-content {
+      max-height: 3.6em; /* примерно две строки */
+      overflow: hidden;
+      position: relative;
+    }
+    .instruction-content::after {
+      content: '...';
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      background: rgba(255, 255, 255, 0.85);
+      padding-left: 10px;
+    }
+    .instruction img {
+      max-width: 100px;
+      height: auto;
+      border-radius: 5px;
+      margin: 10px 5px 0 0;
+    }
+    .actions {
+      margin-top: 10px;
+    }
+    .actions a {
+      text-decoration: none;
+      color: #007bff;
+      margin-right: 10px;
+    }
+    .actions a:hover {
+      text-decoration: underline;
+    }
+    .add-button {
+      display: block;
+      width: fit-content;
+      background-color: #007bff;
+      color: white;
+      padding: 10px 15px;
+      text-decoration: none;
+      border-radius: 5px;
+      margin-bottom: 15px;
+    }
+    .add-button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+<h1>Инструкции</h1>
+<a href="/admin">Назад в панель</a>
+<div class="container">
+  <a href="/admin/instructions/new" class="add-button">Добавить инструкцию</a>
+  <div th:each="instruction : ${instructions}" class="instruction">
+    <div class="instruction-title" th:text="${instruction.title}"></div>
+    <div class="instruction-content" th:utext="${instruction.content}"></div>
+    <div class="actions">
+      <a th:href="@{/admin/instructions/edit/{id}(id=${instruction.id})}">Редактировать</a>
+      <a th:href="@{/admin/instructions/delete/{id}(id=${instruction.id})}" onclick="return confirm('Удалить инструкцию?');">Удалить</a>
+    </div>
+  </div>
+</div>
+</body>
+</html>

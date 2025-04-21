@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Список пользователей</title>
+</head>
+<body>
+<h1>Список пользователей</h1>
+<a href="/admin/users/export">Скачать CSV</a>
+<table border="1">
+  <tr>
+    <th>ID</th>
+    <th>Телефон</th>
+    <th>Telegram</th>
+    <th>Реферальная ссылка</th>
+    <th>Роль</th>
+  </tr>
+  <tr th:each="user : ${users}">
+    <td th:text="${user.id}"></td>
+    <td th:text="${user.phone}"></td>
+    <td th:text="${user.telegram}"></td>
+    <td th:text="${user.referralLink}"></td>
+    <td th:text="${user.role}"></td>
+  </tr>
+</table>
+<a href="/admin">Назад в панель</a>
+</body>
+</html>

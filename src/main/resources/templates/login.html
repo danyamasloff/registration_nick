@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Вход</title>
+  <style>
+    /* Фон для всей страницы */
+    body {
+      font-family: Arial, sans-serif;
+      background-image: url("/static/uploads/фон.jpeg");
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* Контейнер для формы */
+    .login-container {
+      background: rgba(255, 255, 255, 0.8); /* полупрозрачный фон */
+      padding: 40px;
+      border-radius: 10px;
+      text-align: center;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      width: 300px;
+    }
+
+    .logo {
+      width: 120px;
+      height: 120px;
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin: 10px 0 5px;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    p {
+      margin-top: 15px;
+    }
+
+    a {
+      color: #007BFF;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+<div class="login-container">
+  <!-- Логотип -->
+  <img class="logo" src="/static/uploads/Лого.png" alt="Логотип" />
+
+  <h2>Вход в систему</h2>
+  <form th:action="@{/login}" method="post">
+    <label>Телефон: <input type="text" name="username" /></label><br>
+    <label>Пароль: <input type="password" name="password" /></label><br>
+    <button type="submit">Войти</button>
+  </form>
+</div>
+</body>
+</html>
