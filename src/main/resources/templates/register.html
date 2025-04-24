@@ -2,6 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
   <title>Регистрация</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/inputmask/5.0.8/inputmask.min.js"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -17,7 +18,8 @@
     }
 
     .register-container {
-      background: rgba(255, 255, 255, 0.8);
+      /* --- 4. Полупрозрачный фон --- */
+      background: rgba(255, 255, 255, 0.85); /* Белый с 85% непрозрачности */
       padding: 40px;
       border-radius: 10px;
       text-align: center;
@@ -34,24 +36,28 @@
     label {
       display: block;
       margin: 10px 0 5px;
+      text-align: left; /* Выравнивание */
+      font-weight: bold;
     }
 
-    input, select {
+    input, select { /* Добавил select на всякий случай */
       width: 100%;
       padding: 10px;
       margin-bottom: 15px;
       border: 1px solid #ccc;
       border-radius: 5px;
+      box-sizing: border-box; /* Учет padding/border */
     }
 
     button {
       width: 100%;
-      padding: 10px;
+      padding: 12px; /* Увеличим кнопку */
       background-color: #4CAF50;
       color: white;
       border: none;
       border-radius: 5px;
       cursor: pointer;
+      font-size: 1em;
     }
 
     button:hover {
@@ -71,15 +77,33 @@
       text-decoration: underline;
     }
 
-    .error-message {
+    /* Стиль для сообщений об ошибках валидации */
+    .error-message-validation {
+      color: red;
+      font-size: 0.9em;
+      text-align: left;
+      margin-top: -10px; /* Ближе к полю ввода */
+      margin-bottom: 10px;
+    }
+    /* Стиль для общих ошибок (не полей) */
+    .error-message-general {
       color: red;
       margin-bottom: 20px;
+      background-color: #f8d7da;
+      border-left: 6px solid #f44336;
+      padding: 10px;
+      border-radius: 5px;
     }
 
-    .verification-options {
+    .instruction-title-info { /* Стиль для отображения названия инструкции */
       margin-bottom: 15px;
-      text-align: left;
+      padding: 10px;
+      background-color: rgba(0, 123, 255, 0.1);
+      border-radius: 5px;
+      font-size: 0.95em;
     }
+
+
   </style>
 </head>
 <body>
@@ -88,38 +112,48 @@
 
   <h2>Регистрация</h2>
 
-  <div th:if="${errorMessage}" class="error-message">
+  <div th:if="${instructionTitle}" class="instruction-title-info">
+    Вы регистрируетесь для доступа к инструкции: <strong th:text="${instructionTitle}"></strong>
+  </div>
+
+  <div th:if="${errorMessage}" class="error-message-general">
     <p th:text="${errorMessage}"></p>
   </div>
 
   <form th:action="@{/register/send-code}" method="post" th:object="${user}">
-    <label>Телефон:</label>
-    <input type="text" th:field="*{phone}" required placeholder="+79XXXXXXXXX">
-    <span th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></span>
-
-    <label>Пароль:</label>
-    <input type="password" th:field="*{password}" required>
-    <span th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></span>
-
-    <label>Telegram:</label>
-    <input type="text" th:field="*{telegram}">
-
-    <!-- Выбор способа верификации -->
-    <div class="verification-options">
-      <label>Способ подтверждения:</label>
-      <select name="verificationType">
-        <option value="call">Звонок</option>
-        <option value="sms">SMS</option>
-      </select>
+    <label for="phone">Телефон:</label>
+    <input type="tel" th:field="*{phone}" id="phone" required placeholder="+7 (___) ___-__-__">
+    <div th:if="${#fields.hasErrors('phone')}" class="error-message-validation">
+      <span th:errors="*{phone}"></span>
     </div>
 
-    <!-- Передаем значение ref из URL как скрытое поле -->
-    <input type="hidden" th:field="*{referralLink}">
 
-    <button type="submit">Отправить код</button>
+    <label for="password">Пароль:</label>
+    <input type="password" th:field="*{password}" id="password" required minlength="6" placeholder="Минимум 6 символов">
+    <div th:if="${#fields.hasErrors('password')}" class="error-message-validation">
+      <span th:errors="*{password}"></span>
+    </div>
+
+    <input type="hidden" name="referralLink" th:value="${qrCode}" />
+
+    <button type="submit">Отправить код подтверждения</button>
   </form>
 
   <p>Уже есть аккаунт? <a th:href="@{/login}">Войти</a></p>
 </div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    var phoneInput = document.getElementById('phone');
+    if (phoneInput) {
+      Inputmask("+7 (999) 999-99-99", {
+        placeholder: "_",
+        clearIncomplete: true,
+        showMaskOnHover: false, // Изменено
+        showMaskOnFocus: true // Изменено
+      }).mask(phoneInput);
+    }
+  });
+</script>
 </body>
 </html>

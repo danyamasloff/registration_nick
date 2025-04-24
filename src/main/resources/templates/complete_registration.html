@@ -1,3 +1,4 @@
+<!--
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
@@ -124,7 +125,8 @@
     </div>
 
     <form th:action="@{/complete-registration/send-code}" method="post">
-        <input type="hidden" name="telegramId" th:value="${telegramId}" />
+        &lt;!&ndash; Изменили telegramId на userId &ndash;&gt;
+        <input type="hidden" name="userId" th:value="${user.id}" />
 
         <label for="phone">Номер телефона:</label>
         <input type="tel" id="phone" name="phone" class="phone-input"
@@ -143,4 +145,4 @@
     <p class="info-text">На указанный номер телефона будет совершен звонок с кодом подтверждения.</p>
 </div>
 </body>
-</html>
+</html>-->

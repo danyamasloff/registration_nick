@@ -6,52 +6,52 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      background-image: url("/uploads/фон.jpeg");
+      /* --- 1. Фон страницы (уже был, такой же как на главной) --- */
+      background-image: url("/static/uploads/фон.jpeg");
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
-      padding: 20px;
+      padding: 20px; /* Внешний отступ для body */
       margin: 0;
-      min-height: 100vh;
-      display: flex;
+      min-height: 100vh; /* Минимальная высота */
+      display: flex; /* Центрирование контейнера */
       justify-content: center;
+      align-items: flex-start; /* Выравнивание контейнера по верху */
     }
 
     .container {
       width: 100%;
-      max-width: 980px;
-      background: rgba(255, 255, 255, 0.6); /* полупрозрачный фон */
-      padding: 20px;
+      max-width: 980px; /* Максимальная ширина контента */
+      /* --- 2. Полупрозрачный фон для контента --- */
+      background: rgba(255, 255, 255, 0.85); /* Белый с 85% непрозрачности */
+      padding: 30px; /* Внутренние отступы */
       border-radius: 10px;
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      text-align: left; /* Выравнивание текста по левому краю */
+      overflow-y: auto; /* Добавляем скролл, если контент не влезает */
+      margin-top: 20px; /* Отступ сверху для контейнера */
+      margin-bottom: 20px; /* Отступ снизу */
+    }
+
+    .logo-container { /* Отдельный контейнер для логотипа, чтобы он был по центру */
       text-align: center;
-      overflow-y: auto;
+      margin-bottom: 20px;
     }
 
     .logo {
       max-width: 150px;
       height: auto;
-      margin-bottom: 15px;
+      /* margin-bottom убран, используется контейнер */
     }
 
-    .no-copy {
+    /* Запрет выделения и перетаскивания */
+    .no-copy, body {
       user-select: none;
       -webkit-user-select: none;
       -moz-user-select: none;
+      -ms-user-select: none;
     }
-
-    .image-container {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      margin-top: 15px;
-    }
-
-    .image-container img {
-      max-width: 80px;
-      height: auto;
-      border-radius: 5px;
-      margin: 5px;
+    img {
       pointer-events: none;
       -webkit-user-drag: none;
       -moz-user-drag: none;
@@ -59,47 +59,69 @@
       user-drag: none;
     }
 
+    /* Стили для контента инструкции (Thymeleaf th:utext) */
+    .instruction-content {
+      /* Можно добавить стили для текста, списков, заголовков внутри контента */
+      line-height: 1.6; /* Межстрочный интервал */
+      text-align: justify; /* Выравнивание по ширине */
+    }
+    .instruction-content img { /* Стили для картинок внутри контента */
+      max-width: 100%; /* Картинки не вылезают за контейнер */
+      height: auto;
+      display: block; /* Убираем лишние отступы под картинками */
+      margin: 15px auto; /* Отступы и центрирование */
+      border-radius: 5px; /* Слегка скруглим углы */
+    }
+
+    /* Кнопка "Назад" */
+    .button-container { /* Контейнер для центрирования кнопки */
+      text-align: center;
+      margin-top: 30px;
+    }
     .back-button {
       display: inline-block;
-      padding: 10px 15px;
-      margin-top: 20px;
+      padding: 10px 20px; /* Увеличим паддинг */
+      /* margin-top убран, используется контейнер */
       background-color: #007bff;
       color: white;
       text-decoration: none;
       border-radius: 5px;
-      text-align: center;
+      /* text-align убран, используется контейнер */
+      border: none; /* Убираем границу */
+      cursor: pointer;
+      font-size: 1em; /* Размер шрифта */
     }
-
     .back-button:hover {
       background-color: #0056b3;
     }
 
+    /* Адаптивность (остается без изменений) */
     @media (max-width: 460px) {
+      body { padding: 10px; } /* Уменьшаем отступы на маленьких экранах */
       .container {
-        max-width: 460px;
         padding: 15px;
       }
     }
   </style>
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-      document.body.addEventListener('copy', function(e) {
-        e.preventDefault();
-      });
-
-      document.body.addEventListener('contextmenu', function(e) {
-        e.preventDefault();
-      });
+      // Запрет копирования (остается)
+      document.body.addEventListener('copy', function(e) { e.preventDefault(); });
+      // Запрет контекстного меню (остается)
+      document.body.addEventListener('contextmenu', function(e) { e.preventDefault(); });
     });
   </script>
 </head>
 <body>
-<div class="container">
+<div class="container no-copy"> <div class="logo-container">
   <img class="logo" src="/static/uploads/Лого.png" alt="Логотип" />
-  <h1 th:text="${instruction.title}"></h1>
-  <div class="no-copy" th:utext="${instruction.content}"></div>
-  <br><br>
-  <a href="/" class="back-button">Назад</a>
+</div>
+  <h1 th:text="${instruction.title}" style="text-align: center;">Заголовок Инструкции</h1> <hr/> <div class="instruction-content" th:utext="${instruction.content}">
+    <p>Содержимое инструкции...</p>
+  </div>
+  <div class="button-container">
+    <a href="/" class="back-button">Назад к списку</a>
+  </div>
 </div>
 </body>
 </html>

@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Профиль пользователя</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        /* --- Общие стили --- */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            /* --- Используем фон пользователя --- */
+            background-image: url("/static/uploads/фон.jpeg");
+            background-size: cover;
+            background-position: center center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            margin: 0;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-sizing: border-box;
+            color: #333; /* Базовый цвет текста */
+        }
+
+        /* --- Контейнер профиля --- */
+        .profile-container {
+            background: rgba(255, 255, 255, 0.9); /* Белый полупрозрачный фон */
+            padding: 30px 40px;
+            border-radius: 10px; /* Мягкие скругления */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Мягкая тень */
+            width: 100%;
+            max-width: 580px; /* Чуть шире */
+            text-align: center;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        /* --- Логотип --- */
+        .logo-container {
+            margin-bottom: 25px; /* Больше отступ */
+        }
+        .logo {
+            width: 100px;
+            height: 100px;
+            /* border-radius: 50%; /* Убрал круглый логотип, если он квадратный */
+            object-fit: contain; /* Чтобы лого не искажался */
+            /* Путь к логотипу пользователя */
+            content: url("/static/uploads/Лого.png");
+        }
+
+        /* --- Заголовок --- */
+        h2 {
+            margin-top: 0; /* Убираем отступ сверху */
+            margin-bottom: 25px;
+            color: #004d40; /* Темный зелено-бирюзовый */
+            font-weight: 600;
+            font-size: 1.8em; /* Крупнее */
+            border-bottom: 1px solid #e0e0e0;
+            padding-bottom: 15px;
+        }
+
+        /* --- Область информации --- */
+        .profile-info {
+            text-align: left;
+            margin-bottom: 30px;
+        }
+        .profile-info p {
+            margin-bottom: 15px;
+            font-size: 1.1em;
+            color: #424242; /* Темно-серый текст */
+            line-height: 1.6;
+            padding-left: 15px;
+            /* Акцентная полоска в цвет гаммы */
+            border-left: 4px solid #00796b; /* Бирюзовый */
+        }
+        .profile-info strong {
+            color: #004d40; /* Темный зелено-бирюзовый */
+            display: inline-block;
+            min-width: 90px; /* Выравнивание */
+        }
+
+        /* --- Секция Telegram --- */
+        .telegram-info {
+            margin-top: 30px;
+            padding-top: 25px;
+            border-top: 1px solid #e0e0e0;
+            text-align: left;
+        }
+        .telegram-info h3 {
+            margin-top: 0;
+            margin-bottom: 20px;
+            color: #00796b; /* Бирюзовый */
+            font-size: 1.3em;
+            font-weight: 600;
+        }
+        .telegram-info p {
+            margin-bottom: 12px;
+            color: #555;
+            font-size: 1em;
+            line-height: 1.5;
+        }
+        .telegram-info .current-account {
+            font-weight: bold;
+            color: #2e7d32; /* Темно-зеленый для привязанного */
+        }
+        .telegram-info .not-linked {
+            font-style: italic;
+            color: #c62828; /* Темно-красный для непривязанного */
+        }
+        .telegram-info .link-button {
+            margin-top: 15px;
+        }
+        .telegram-info .info-text { /* Текст под кнопкой */
+            font-size: 0.9em;
+            color: #757575; /* Серый */
+            margin-top: 15px;
+        }
+
+        /* --- Кнопка привязки/изменения --- */
+        .link-button {
+            display: inline-block;
+            padding: 12px 22px;
+            /* --- Используем основной цвет гаммы --- */
+            background-color: #00796b; /* Бирюзовый */
+            color: white !important;
+            text-decoration: none;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 500;
+            transition: background-color 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .link-button:hover {
+            background-color: #00695c; /* Темнее при наведении */
+            text-decoration: none;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        /* --- Сообщения (Успех/Ошибка/Инфо) --- */
+        .message {
+            padding: 12px 15px;
+            margin-bottom: 25px;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 0.95em;
+            border: 1px solid transparent;
+        }
+        .success-message { background-color: #e8f5e9; border-color: #c8e6c9; color: #2e7d32; }
+        .error-message { background-color: #ffebee; border-color: #ffcdd2; color: #c62828; }
+        .info-message { background-color: #e0f7fa; border-color: #b2ebf2; color: #006064; }
+
+        /* --- Навигационные ссылки --- */
+        .nav-links {
+            margin-top: 35px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            text-align: center;
+        }
+        .nav-links a, .nav-links button { /* Применяем стиль и к кнопке Выйти */
+            color: #00796b; /* Цвет ссылок в тон */
+            text-decoration: none;
+            margin: 0 15px;
+            font-size: 1em;
+            background: none; /* Стили для кнопки Выйти */
+            border: none;
+            padding: 0;
+            cursor: pointer;
+        }
+        .nav-links a:hover, .nav-links button:hover {
+            text-decoration: underline;
+            color: #004d40;
+        }
+
+        /* --- Адаптивность --- */
+        @media (max-width: 600px) {
+            body { padding: 10px; align-items: flex-start; } /* Убираем центрирование по вертикали на мобильных */
+            .profile-container { padding: 20px; margin-top: 10px;}
+            h2 { font-size: 1.5em; }
+            .profile-info p { font-size: 1em; }
+            .telegram-info h3 { font-size: 1.1em; }
+        }
+    </style>
+</head>
+<body>
+<div class="profile-container">
+    <div class="logo-container">
+        <img class="logo" src="/static/uploads/Лого.png" alt="Логотип" />
+    </div>
+    <h2>Ваш профиль</h2>
+
+    <div th:if="${success}" class="message success-message">
+        <p th:text="${success}"></p>
+    </div>
+    <div th:if="${error}" class="message error-message">
+        <p th:text="${error}"></p>
+    </div>
+    <div th:if="${info}" class="message info-message">
+        <p th:text="${info}"></p>
+    </div>
+
+    <div class="profile-info" th:if="${user != null}" th:object="${user}">
+        <p><strong>Телефон:</strong> <span th:text="*{phone}">+7...</span></p>
+    </div>
+    <div class="profile-info" th:if="${user == null}">
+        <p>Не удалось загрузить данные профиля.</p>
+    </div>
+
+    <div class="telegram-info" th:if="${user != null}" th:object="${user}">
+        <h3>Привязка Telegram</h3>
+        <div th:if="*{telegramId != null}">
+            <p><strong>Статус:</strong> <span class="current-account">Привязан</span></p>
+            <p><strong>Аккаунт:</strong>
+                <span th:if="*{telegram != null}" th:text="'@' + *{telegram}"></span>
+                <span th:if="*{telegram == null}" th:text="'ID ' + *{telegramId}"></span>
+            </p>
+            <p class="info-text">Чтобы изменить аккаунт, <a href="https://web.telegram.org/k/" target="_blank">выйдите из текущей сессии Telegram</a> в этом браузере и нажмите кнопку ниже.</p>
+            <a th:href="@{/profile/link-telegram}" class="link-button">Изменить аккаунт Telegram</a>
+        </div>
+        <div th:if="*{telegramId == null}">
+            <p><strong>Статус:</strong> <span class="not-linked">Не привязан</span></p>
+            <p class="info-text">Привяжите ваш аккаунт Telegram для быстрого входа в систему без пароля.</p>
+            <a th:href="@{/profile/link-telegram}" class="link-button">Привязать Telegram</a>
+        </div>
+    </div>
+
+    <div class="nav-links">
+        <a href="/">На главную</a>
+        <span sec:authorize="isAuthenticated()">|
+                 <form th:action="@{/logout}" method="post" style="display: inline;">
+                     <button type="submit">Выйти</button> </form>
+             </span>
+    </div>
+
+</div>
+</body>
+</html>

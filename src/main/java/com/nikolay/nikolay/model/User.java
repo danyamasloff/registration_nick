@@ -1,6 +1,5 @@
 package com.nikolay.nikolay.model;
 
-
 import com.nikolay.nikolay.enums.Role;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -9,8 +8,6 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
-@NoArgsConstructor
 @Entity
 @Table(name = "users")
 public class User {
@@ -28,6 +25,8 @@ public class User {
     @Column(nullable = false)
     private String password;
 
+    // Явно указываем имя колонки для telegram
+    @Column(name = "telegram")
     private String telegram;
 
     @Column(nullable = false)
@@ -35,8 +34,16 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Role role = Role.USER; // 👈 Добавляем роли
+    private Role role = Role.USER;
 
+    // Явно указываем имя колонки для telegram_id
+    @Column(name = "telegram_id")
+    private Long telegramId;
+
+    @Column(name = "phone_verified")
+    private Boolean phoneVerified = false;
+
+    // Геттеры и сеттеры
     public Long getId() {
         return id;
     }
@@ -61,12 +68,21 @@ public class User {
         this.password = password;
     }
 
+    // Явные геттеры и сеттеры для telegram полей
     public String getTelegram() {
         return telegram;
     }
 
     public void setTelegram(String telegram) {
         this.telegram = telegram;
+    }
+
+    public Long getTelegramId() {
+        return telegramId;
+    }
+
+    public void setTelegramId(Long telegramId) {
+        this.telegramId = telegramId;
     }
 
     public String getReferralLink() {
@@ -83,5 +99,13 @@ public class User {
 
     public void setRole(Role role) {
         this.role = role;
+    }
+
+    public Boolean getPhoneVerified() {
+        return phoneVerified;
+    }
+
+    public void setPhoneVerified(Boolean phoneVerified) {
+        this.phoneVerified = phoneVerified;
     }
 }

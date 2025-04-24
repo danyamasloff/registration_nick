@@ -1,7 +1,9 @@
+/*
 package com.nikolay.nikolay.controller;
 
 import com.nikolay.nikolay.model.User;
 import com.nikolay.nikolay.service.UserService;
+import jakarta.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -10,11 +12,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Optional;
 
@@ -33,47 +32,37 @@ public class TelegramController {
         this.userDetailsService = userDetailsService;
     }
 
-    /**
-     * Страница установки пароля для пользователей, зарегистрированных через Telegram
-     */
-    @GetMapping("/set-password")
-    public String showSetPasswordForm(@RequestParam("telegram") String telegram, Model model) {
-        Optional<User> userOpt = userService.findByTelegram(telegram);
+
+    @GetMapping("/login-success")
+    public String loginSuccess(HttpSession session) {
+        Long userId = (Long) session.getAttribute("authenticatedUserId");
+        if (userId == null) {
+            return "redirect:/login?error=session_expired";
+        }
+
+        Optional<User> userOpt = userService.findById(userId);
         if (userOpt.isEmpty()) {
             return "redirect:/login?error=user_not_found";
         }
 
-        model.addAttribute("user", userOpt.get());
-        return "set_password";
-    }
-
-    /**
-     * Обработка формы установки пароля
-     */
-    @PostMapping("/set-password")
-    public String setPassword(User user) {
-        Optional<User> userOpt = userService.findByTelegram(user.getTelegram());
-        if (userOpt.isEmpty()) {
-            return "redirect:/login?error=user_not_found";
-        }
-
-        User existingUser = userOpt.get();
-        existingUser.setPassword(user.getPassword());
-
-        // Обновляем телефон, если он был изменен
-        if (user.getPhone() != null && !user.getPhone().isEmpty()) {
-            existingUser.setPhone(user.getPhone());
-        }
-
-        userService.registerUser(existingUser);
+        User user = userOpt.get();
 
         // Аутентифицируем пользователя
-        UserDetails userDetails = userDetailsService.loadUserByUsername(existingUser.getPhone());
-        Authentication authentication = new UsernamePasswordAuthenticationToken(
-                userDetails, null, userDetails.getAuthorities());
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+        try {
+            UserDetails userDetails = userDetailsService.loadUserByUsername(user.getPhone());
+            Authentication authentication = new UsernamePasswordAuthenticationToken(
+                    userDetails, null, userDetails.getAuthorities());
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            logger.info("Пользователь с телефоном {} успешно аутентифицирован через Telegram", user.getPhone());
+        } catch (Exception e) {
+            logger.error("Ошибка при аутентификации пользователя", e);
+            return "redirect:/login?error=authentication_failed";
+        }
 
-        logger.info("Пользователь {} успешно установил пароль и был аутентифицирован", existingUser.getTelegram());
+        // Очищаем данные сессии
+        session.removeAttribute("authenticatedUserId");
+
         return "redirect:/";
     }
 }
+*/

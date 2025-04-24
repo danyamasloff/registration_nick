@@ -1,166 +1,196 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-  <title>Вход</title>
+  <title>Вход в систему</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/inputmask/5.0.8/inputmask.min.js"></script>
+  <script async src="https://telegram.org/js/telegram-widget.js?22"></script>
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     /* Фон для всей страницы */
     body {
-      font-family: Arial, sans-serif;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background-image: url("/static/uploads/фон.jpeg");
       background-size: cover;
-      background-position: center;
+      background-position: center center;
       background-repeat: no-repeat;
+      background-attachment: fixed;
       margin: 0;
       height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
+      padding: 15px; /* Добавим паддинг для маленьких экранов */
+      box-sizing: border-box;
     }
 
     /* Контейнер для формы */
     .login-container {
-      background: rgba(255, 255, 255, 0.8); /* полупрозрачный фон */
-      padding: 40px;
+      background: rgba(255, 255, 255, 0.9); /* Полупрозрачный фон */
+      padding: 30px 40px; /* Отступы внутри */
       border-radius: 10px;
       text-align: center;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-      width: 300px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 380px; /* Оптимальная ширина */
+      border: 1px solid rgba(0, 0, 0, 0.05);
     }
 
     .logo {
-      width: 120px;
-      height: 120px;
+      width: 100px; /* Размер лого */
+      height: 100px;
       margin-bottom: 20px;
+      content: url("/static/uploads/Лого.png"); /* Путь к лого */
+    }
+
+    h2 {
+      margin-top: 0;
+      margin-bottom: 25px;
+      color: #004d40; /* Цвет из гаммы */
+      font-weight: 600;
     }
 
     label {
       display: block;
       margin: 10px 0 5px;
+      text-align: left;
+      font-weight: bold;
+      color: #333;
+      font-size: 0.95em;
     }
 
-    input {
+    input[type="text"],
+    input[type="tel"],
+    input[type="password"] {
       width: 100%;
-      padding: 10px;
+      padding: 12px; /* Больше поля */
       margin-bottom: 15px;
       border: 1px solid #ccc;
       border-radius: 5px;
+      box-sizing: border-box;
+      font-size: 1em;
     }
 
-    button {
+    button[type="submit"] { /* Стиль только для кнопки входа по паролю */
       width: 100%;
-      padding: 10px;
-      background-color: #4CAF50;
+      padding: 12px;
+      background-color: #2e7d32; /* Зеленый для основной кнопки */
       color: white;
       border: none;
       border-radius: 5px;
       cursor: pointer;
+      font-size: 1.05em;
+      font-weight: bold;
+      transition: background-color 0.2s ease;
     }
-
-    button:hover {
-      background-color: #45a049;
+    button[type="submit"]:hover {
+      background-color: #1b5e20; /* Темнее зеленый */
     }
 
     /* Стили для разделителя */
-    .divider {
-      display: flex;
-      align-items: center;
-      margin: 20px 0;
+    .divider { display: flex; align-items: center; margin: 25px 0; }
+    .divider:before, .divider:after { content: ""; flex: 1; border-bottom: 1px solid #e0e0e0; }
+    .divider-text { margin: 0 15px; color: #757575; font-size: 0.9em; font-weight: bold; }
+
+    /* Стили для блока входа через Telegram */
+    .telegram-login { margin: 20px 0; text-align: center; }
+    .telegram-login p { margin-bottom: 10px; font-weight: bold; color: #333; }
+    /* --- Стиль для новой подсказки --- */
+    .telegram-note {
+      font-size: 0.85em; /* Мелкий шрифт */
+      color: #666;      /* Серый цвет */
+      margin-top: 8px; /* Небольшой отступ сверху */
+      line-height: 1.3;
     }
 
-    .divider:before,
-    .divider:after {
-      content: "";
-      flex: 1;
-      border-bottom: 1px solid #ccc;
-    }
+    /* Стили для сообщений */
+    .message { padding: 12px 15px; margin-bottom: 20px; border-radius: 5px; font-size: 0.9em; border: 1px solid transparent;}
+    .info-message { background-color: #e0f7fa; border-color: #b2ebf2; color: #006064; }
+    .error-message { background-color: #ffebee; border-color: #ffcdd2; color: #c62828; }
+    .success-message { background-color: #e8f5e9; border-color: #c8e6c9; color: #2e7d32; }
 
-    .divider-text {
-      margin: 0 10px;
-      color: #666;
+    /* Ссылка на регистрацию */
+    .register-link {
+      margin-top: 25px;
+      font-size: 0.9em;
     }
-
-    /* Стили для кнопки входа через Telegram */
-    .telegram-login {
-      margin: 20px 0;
-      text-align: center;
-    }
-
-    .telegram-btn {
-      background-color: #0088cc;
-      color: white;
-      padding: 10px 15px;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
+    .register-link a {
+      color: #00796b; /* Цвет из гаммы */
+      text-decoration: none;
       font-weight: bold;
-      text-decoration: none;
-      margin-bottom: 15px;
     }
+    .register-link a:hover { text-decoration: underline; }
 
-    .telegram-btn svg {
-      margin-right: 10px;
-    }
-
-    .telegram-btn:hover {
-      background-color: #0077b5;
-    }
-
-    p {
-      margin-top: 15px;
-    }
-
-    a {
-      color: #007BFF;
-      text-decoration: none;
-    }
-
-    a:hover {
-      text-decoration: underline;
-    }
-
-    .error-message {
-      color: #f44336;
-      margin-bottom: 15px;
-    }
   </style>
-  <!-- Скрипт для Telegram Login Widget -->
-  <script async src="https://telegram.org/js/telegram-widget.js?22"></script>
 </head>
 <body>
 <div class="login-container">
-  <!-- Логотип -->
-  <img class="logo" src="/static/uploads/Лого.png" alt="Логотип" />
-
+  <img class="logo" alt="Логотип" />
   <h2>Вход в систему</h2>
 
-  <!-- Сообщение об ошибке -->
-  <div th:if="${param.error}" class="error-message">
-    <p>Неправильный логин или пароль</p>
+  <div th:if="${param.qrCode}" class="message info-message">
+    <p>Вы перешли по QR-коду. Войдите, чтобы получить доступ к инструкции.</p>
+  </div>
+  <div th:if="${param.error}" class="message error-message">
+    <p>Неверный телефон или пароль.</p>
+  </div>
+  <div th:if="${param.logout}" class="message success-message">
+    <p>Вы успешно вышли из системы.</p>
+  </div>
+  <div th:if="${error}" class="message error-message">
+    <p th:text="${error}"></p>
+  </div>
+  <div th:if="${success}" class="message success-message"> <p th:text="${success}"></p>
   </div>
 
-  <!-- Виджет входа через Telegram -->
   <div class="telegram-login">
+    <p>Войти через Telegram:</p>
+    <!-- Исправленный виджет Telegram без использования th:attr -->
     <script async
             src="https://telegram.org/js/telegram-widget.js?22"
-            data-telegram-login="rszc_bot"
+            th:data-telegram-login="${telegramBotUsername}"
             data-size="large"
-            data-auth-url="http://localhost:8090/telegram-callback"
-            data-request-access="write"></script>
+            th:data-auth-url="${telegramRedirectUri}"
+            data-request-access="write">
+    </script>
+    <div class="telegram-note">
+      (Вход через Telegram доступен только после привязки аккаунта в вашем профиле, выполненной после входа по номеру телефона)
+    </div>
   </div>
 
   <div class="divider">
-    <span class="divider-text">или</span>
+    <span class="divider-text">ИЛИ</span>
   </div>
 
   <form th:action="@{/login}" method="post">
-    <label>Телефон: <input type="text" name="username" /></label><br>
-    <label>Пароль: <input type="password" name="password" /></label><br>
-    <button type="submit">Войти</button>
+    <label for="username">Телефон:</label>
+    <input type="tel" id="phone-login" name="username" required placeholder="+7 (___) ___-__-__"/>
+
+    <label for="password">Пароль:</label>
+    <input type="password" id="password" name="password" required />
+
+    <button type="submit">Войти по телефону</button>
   </form>
 
-  <p>Еще нет аккаунта? <a th:href="@{/register}">Зарегистрироваться</a></p>
+  <div class="register-link">
+    Нет аккаунта? Регистрация доступна только по QR-коду/ссылке.
+  </div>
+
 </div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    var phoneInput = document.getElementById('phone-login');
+    if (phoneInput) {
+      Inputmask("+7 (999) 999-99-99", {
+        placeholder: "_",
+        clearIncomplete: true,
+        showMaskOnHover: false,
+        showMaskOnFocus: true
+      }).mask(phoneInput);
+    }
+  });
+</script>
+
 </body>
 </html>

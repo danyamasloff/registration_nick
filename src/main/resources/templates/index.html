@@ -2,159 +2,218 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
-    <meta name="robots" content="noindex, nofollow">
-    <title>Главная страница</title>
+    <meta charset="UTF-8"> <meta name="robots" content="noindex, nofollow">
+    <title>Инструкции к медицинским аппаратам</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body {
-            -webkit-user-select: none;
+            /* Стили для фона */
+            -webkit-user-select: none; /* Запрет выделения текста */
             -moz-user-select: none;
             -ms-user-select: none;
             user-select: none;
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Более современный шрифт */
+            background-color: #f4f4f4; /* Резервный цвет фона */
+            /* --- Фон страницы --- */
             background-image: url("/static/uploads/фон.jpeg");
             background-size: cover;
-            background-position: center;
+            background-position: center center;
             background-repeat: no-repeat;
+            background-attachment: fixed; /* Фон не скроллится */
+            min-height: 100vh; /* Чтобы фон занимал весь экран */
+            margin: 0; /* Убираем отступы body */
+            padding: 0; /* Убираем отступы body */
         }
-        img {
-            pointer-events: none;
+        /* Контейнер для позиционирования кнопок в углу */
+        .corner-buttons {
+            position: fixed; /* Фиксируем */
+            top: 15px; /* Отступ сверху */
+            right: 15px; /* Отступ справа */
+            z-index: 1000; /* Поверх других элементов */
+            display: flex; /* Располагаем элементы в ряд */
+            gap: 10px; /* Пространство между кнопками */
         }
-        .container {
-            width: 80%;
-            margin: auto;
-            padding: 20px;
-            text-align: center;
-        }
-
-        .logo {
-            width: 135px;
-            height: 135px;
-            margin-bottom: 20px;
-        }
-
-        .instruction {
-            padding: 10px;
-            border: 1px solid #ddd;
-            margin-bottom: 10px;
-            position: relative;
-            background-color: rgba(255, 255, 255, 0.8);
-            border-radius: 5px;
-        }
-
-        .no-copy {
-            user-select: none;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-        }
-
-        .chat {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background-color: rgba(0, 0, 0, 0.7);
-            padding: 10px;
-            border-radius: 5px;
-            color: white;
-            font-size: 14px;
-            z-index: 9999;
-        }
-
-        .chat a {
-            color: white;
-            text-decoration: none;
-            margin: 0 5px;
-        }
-
-        .chat a:hover {
-            text-decoration: underline;
-        }
-
-        .chat p {
-            margin: 5px 0;
-        }
-
-        .locked-button {
-            cursor: not-allowed;
-            color: grey;
-            text-decoration: none;
-        }
-
-        .lock-icon {
-            margin-left: 5px;
-            font-size: 1.2em;
-            color: grey;
-        }
-
-        .login-button {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px 20px;
+        /* Кнопки/ссылки в углу */
+        .corner-buttons a, .corner-buttons button {
+            background-color: #00796b; /* Цвет из гаммы */
+            color: white !important;
+            padding: 8px 15px; /* Немного меньше */
             border: none;
             border-radius: 5px;
             cursor: pointer;
             text-decoration: none;
-            font-size: 16px;
+            font-size: 14px; /* Меньше шрифт */
+            line-height: 1.5; /* Выравнивание текста кнопки */
+            transition: background-color 0.2s ease;
         }
-
-        .login-button:hover {
-            background-color: #45a049;
-        }
-
-        .registration-banner {
-            background-color: rgba(255, 255, 255, 0.8);
-            padding: 20px;
-            border-radius: 10px;
-            margin: 20px auto;
-            text-align: center;
-            max-width: 80%;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .register-button {
-            display: inline-block;
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 5px;
+        .corner-buttons a:hover, .corner-buttons button:hover {
+            background-color: #00695c;
             text-decoration: none;
-            margin-top: 10px;
-            font-weight: bold;
+        }
+        /* Форма для кнопки Выйти */
+        .corner-buttons form {
+            margin: 0; /* Убираем отступы у формы */
         }
 
-        .register-button:hover {
-            background-color: #45a049;
+
+        img { pointer-events: none; }
+
+        .container {
+            width: 85%; /* Чуть шире */
+            max-width: 1100px; /* Макс ширина */
+            margin: 80px auto 40px auto; /* Отступ сверху для кнопок, снизу для чата */
+            padding: 30px;
+            text-align: center;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
+
+        .logo { width: 120px; height: 120px; margin-bottom: 20px; content: url("/static/uploads/Лого.png"); }
+        h1 { margin-bottom: 30px; color: #004d40; font-size: 1.8em; }
+
+
+        .instruction-list { /* Добавим обертку для списка */
+            margin-top: 30px;
+        }
+        .instruction {
+            padding: 15px 20px;
+            border: 1px solid #e0e0e0; /* Мягче граница */
+            margin-bottom: 15px;
+            background-color: rgba(255, 255, 255, 0.9); /* Фон для самого блока */
+            border-radius: 8px; /* Больше скругление */
+            text-align: left;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: box-shadow 0.2s ease;
+        }
+        .instruction:hover {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Тень при наведении */
+        }
+
+        .instruction h3 { margin: 0; flex-grow: 1; padding-right: 15px; color: #333; font-size: 1.1em;}
+        .instruction a { white-space: nowrap; }
+
+        .no-copy { user-select: none; -webkit-user-select: none; -moz-user-select: none; }
+
+        /* Чат */
+        .chat { position: fixed; bottom: 20px; right: 20px; background-color: rgba(0, 0, 0, 0.75); padding: 10px 15px; border-radius: 5px; color: white; font-size: 14px; z-index: 9999; }
+        .chat a { color: #a5d6a7; text-decoration: none; margin: 0 5px; } /* Цвет ссылок чата */
+        .chat a:hover { text-decoration: underline; }
+        .chat p { margin: 5px 0; }
+
+        /* Закрытая инструкция */
+        .locked-button { cursor: default; color: #9e9e9e; font-weight: bold; display: inline-flex; align-items: center; }
+        .lock-icon { margin-left: 8px; font-size: 1.1em; color: #9e9e9e; }
+
+        /* Кнопка Открыть */
+        .btn-open {
+            background-color: #00796b;
+            color: white !important;
+            padding: 6px 12px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 0.9em;
+            transition: background-color 0.2s ease;
+        }
+        .btn-open:hover {
+            background-color: #00695c;
+            text-decoration: none;
+        }
+
+        /* Инфо-баннер для неавторизованных */
+        .info-banner {
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 25px; /* Больше отступы */
+            border-radius: 10px;
+            margin: 30px auto;
+            text-align: center;
+            max-width: 65%; /* Уменьшим */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border: 1px solid #eee;
+        }
+        .info-banner h3 { margin-top: 0; margin-bottom: 15px; font-size: 1.2em; color: #004d40; }
+        .info-banner p { font-size: 1em; color: #555; margin-bottom: 20px; line-height: 1.5; }
+        .info-banner .login-link-button {
+            background-color: #00796b; /* Цвет кнопки входа */
+            color: white !important;
+            padding: 10px 25px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 1em;
+            display: inline-block;
+            margin-top: 10px;
+            transition: background-color 0.2s ease;
+        }
+        .info-banner .login-link-button:hover {
+            background-color: #00695c;
+            text-decoration: none;
+        }
+        .info-banner p a { /* Ссылка 'авторизуйтесь' */
+            color: #00796b;
+            font-weight: bold;
+            text-decoration: none;
+        }
+        .info-banner p a:hover {
+            text-decoration: underline;
+        }
+
+        /* Сообщения */
+        .message { padding: 15px; margin: 20px auto; border-radius: 5px; max-width: 80%; text-align: center; border: 1px solid transparent; font-size: 0.95em;}
+        .error-message { background-color: #ffebee; border-color: #ffcdd2; color: #c62828; }
+        .success-message { background-color: #e8f5e9; border-color: #c8e6c9; color: #2e7d32; }
+        .info-message { background-color: #e0f7fa; border-color: #b2ebf2; color: #006064; }
+
     </style>
 </head>
 <body>
-<a th:href="@{/login}" class="login-button">Войти</a>
-<div class="container">
-    <img class="logo" src="/static/uploads/Лого.png" alt="Логотип" />
-    <h1>Инструкции к медицинским аппаратам</h1>
+<div class="corner-buttons">
+    <a th:href="@{/login}" sec:authorize="isAnonymous()">Войти</a>
 
-    <!-- Используем стандартную проверку на анонимного пользователя -->
-    <div sec:authorize="isAnonymous()" class="registration-banner">
-        <h3>Для доступа к инструкциям требуется регистрация</h3>
-        <a th:href="@{/register}" class="register-button">Зарегистрироваться</a>
+    <a th:href="@{/profile}" sec:authorize="isAuthenticated()">Профиль</a>
+    <form th:action="@{/logout}" method="post" sec:authorize="isAuthenticated()">
+        <button type="submit">Выйти</button>
+    </form>
+</div>
+
+
+<div class="container">
+    <img class="logo" alt="Логотип" /> <h1>Инструкции к медицинским аппаратам</h1>
+
+    <div th:if="${error}" class="message error-message"> <p th:text="${error}"></p> </div>
+    <div th:if="${success}" class="message success-message"> <p th:text="${success}"></p> </div>
+    <div th:if="${info}" class="message info-message"> <p th:text="${info}"></p> </div>
+
+    <div sec:authorize="isAnonymous()" class="info-banner">
+        <h3>Рады приветствовать в нашем онлайн-репозитории!</h3>
+        <p>Для доступа к содержанию <a th:href="@{/login}">авторизуйтесь</a><br/>или отсканируйте уникальный QR-код из комплекта с вашим оборудованием.</p>
+        <a th:href="@{/login}" class="login-link-button">Перейти ко входу</a>
     </div>
 
-    <div th:each="instruction : ${instructions}" class="instruction">
-        <h3 th:text="${instruction.title}"></h3>
-        <a th:href="${instruction.href}" th:class="${instruction.available ? '' : 'locked-button'}">
-            Открыть
-            <span th:if="${!instruction.available}" class="lock-icon">🔒</span>
-        </a>
+    <div class="instruction-list">
+        <div th:each="instruction : ${instructions}" class="instruction">
+            <h3 th:text="${instruction.title}">Название Инструкции</h3>
+            <a th:href="${instruction.available} ? @{/instruction/{id}(id=${instruction.id})} : 'javascript:void(0);'"
+               th:class="${instruction.available ? 'btn-open' : 'locked-button'}">
+                <span th:if="${instruction.available}">Открыть</span>
+                <span th:if="${!instruction.available}">Доступ закрыт</span>
+                <span th:if="${!instruction.available}" class="lock-icon">🔒</span>
+            </a>
+        </div>
+        <div th:if="${instructions == null or instructions.isEmpty()}" style="margin-top: 20px; color: #777;">
+            <p>Нет доступных инструкций.</p>
+        </div>
     </div>
 </div>
 
 <div class="chat">
     <p>Напишите нам в:</p>
     <a href="https://wa.me/+79131200213" target="_blank">WhatsApp</a> |
-    <a href="https://t.me/Nshulgin" target="_blank">Telegram</a>
+    <a href="https://t.me/ilya_helpful" target="_blank">Telegram</a>
 </div>
 </body>
 </html>

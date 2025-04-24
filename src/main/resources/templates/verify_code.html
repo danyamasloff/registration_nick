@@ -16,13 +16,14 @@
             align-items: center;
         }
 
-        .register-container {
-            background: rgba(255, 255, 255, 0.8);
+        .register-container { /* Используем тот же класс для единообразия */
+            /* --- 4. Полупрозрачный фон --- */
+            background: rgba(255, 255, 255, 0.85); /* Белый с 85% непрозрачности */
             padding: 40px;
             border-radius: 10px;
             text-align: center;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            width: 300px;
+            width: 320px; /* Немного шире */
         }
 
         .logo {
@@ -31,27 +32,52 @@
             margin-bottom: 20px;
         }
 
+        h2 {
+            margin-bottom: 15px;
+        }
+
+        .info-text { /* Стиль для поясняющего текста */
+            margin-bottom: 20px;
+            font-size: 0.95em;
+            color: #333;
+            line-height: 1.4;
+        }
+
         .error-message {
             color: red;
             margin-bottom: 20px;
+            background-color: #f8d7da;
+            border-left: 6px solid #f44336;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: left;
         }
 
-        input, button {
+        label {
+            display: block;
+            margin-bottom: 5px;
+            text-align: left;
+            font-weight: bold;
+        }
+
+        input[type="text"], input[type="hidden"] { /* Стилизуем и скрытые поля для консистентности, хотя они не видны */
             width: 100%;
             padding: 10px;
-            margin-bottom: 15px;
+            margin-bottom: 20px; /* Больше отступ под полем кода */
             border-radius: 5px;
-        }
-
-        input {
             border: 1px solid #ccc;
+            box-sizing: border-box;
         }
 
         button {
+            width: 100%;
+            padding: 12px; /* Увеличим кнопку */
             background-color: #4CAF50;
             color: white;
             border: none;
+            border-radius: 5px;
             cursor: pointer;
+            font-size: 1em;
         }
 
         button:hover {
@@ -62,33 +88,18 @@
 <body>
 <div class="register-container">
     <img class="logo" src="/static/uploads/Лого.png" alt="Логотип" />
-    <h2>Подтверждение номера телефона</h2>
+    <h2>Подтверждение номера</h2>
 
     <div th:if="${errorMessage}" class="error-message">
         <p th:text="${errorMessage}"></p>
     </div>
 
-    <!-- Динамическое сообщение в зависимости от типа верификации -->
-    <div th:if="${verificationType == 'call'}">
-        <p>Мы отправили <strong>звонок</strong> на номер <strong th:text="${user.phone}"></strong>.</p>
-        <p>Пожалуйста, ответьте на звонок и прослушайте код подтверждения.</p>
-    </div>
-    <div th:if="${verificationType == 'sms' || verificationType == null}">
-        <p>Мы отправили <strong>SMS</strong> с кодом на номер <strong th:text="${user.phone}"></strong>.</p>
-        <p>Пожалуйста, введите полученный код.</p>
-    </div>
+    <p class="info-text">Мы отправили <strong>звонок</strong> на номер <strong th:text="${phone ?: user.phone}">+7...</strong>.<br/>
+        Пожалуйста, введите код подтверждения из звонка.</p>
 
     <form th:action="@{/register/verify}" method="post" th:object="${user}">
-        <input type="hidden" th:field="*{phone}">
-        <input type="hidden" th:field="*{password}">
-        <input type="hidden" th:field="*{telegram}">
-        <input type="hidden" th:field="*{referralLink}">
-        <input type="hidden" name="verificationType" th:value="${verificationType}">
-
-        <label>Код подтверждения:</label>
-        <input type="text" name="code" required placeholder="Например: 1234" />
-
-        <button type="submit">Подтвердить и зарегистрироваться</button>
+        <label for="code">Код подтверждения:</label>
+        <input type="text" id="code" name="code" required placeholder="Введите код из звонка" pattern="\d*" inputmode="numeric" autocomplete="one-time-code"/> <button type="submit">Подтвердить и зарегистрироваться</button>
     </form>
 </div>
 </body>

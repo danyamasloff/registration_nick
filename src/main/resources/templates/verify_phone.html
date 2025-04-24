@@ -17,12 +17,13 @@
         }
 
         .verify-container {
-            background: rgba(255, 255, 255, 0.8);
+            /* --- 4. Полупрозрачный фон --- */
+            background: rgba(255, 255, 255, 0.85); /* Белый с 85% непрозрачности */
             padding: 40px;
             border-radius: 10px;
             text-align: center;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            width: 300px;
+            width: 320px; /* Немного шире */
         }
 
         .logo {
@@ -32,17 +33,24 @@
         }
 
         h2 {
+            margin-bottom: 15px;
+        }
+
+        .info-text { /* Стиль для поясняющего текста */
             margin-bottom: 20px;
+            font-size: 0.95em;
+            color: #333;
+            line-height: 1.4;
         }
 
         .error-message {
             color: red;
             margin-bottom: 15px;
-        }
-
-        .info {
-            margin-bottom: 20px;
-            font-size: 16px;
+            background-color: #f8d7da;
+            border-left: 6px solid #f44336;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: left;
         }
 
         form {
@@ -56,10 +64,10 @@
             font-weight: bold;
         }
 
-        input {
+        input[type="text"] {
             width: 100%;
             padding: 10px;
-            margin-bottom: 10px;
+            margin-bottom: 20px; /* Отступ под полем */
             border: 1px solid #ccc;
             border-radius: 5px;
             box-sizing: border-box;
@@ -67,13 +75,14 @@
 
         button {
             width: 100%;
-            padding: 10px;
+            padding: 12px; /* Увеличим кнопку */
             background-color: #4CAF50;
             color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
             font-weight: bold;
+            font-size: 1em;
         }
 
         button:hover {
@@ -85,18 +94,17 @@
 <div class="verify-container">
     <img class="logo" src="/static/uploads/Лого.png" alt="Логотип" />
 
-    <h2>Подтверждение номера телефона</h2>
+    <h2>Подтверждение номера</h2>
 
     <div th:if="${errorMessage}" class="error-message">
         <p th:text="${errorMessage}"></p>
     </div>
 
-    <p class="info">Мы совершили звонок на номер <strong th:text="${phone}"></strong>.</p>
-    <p class="info">Пожалуйста, введите код подтверждения из звонка:</p>
+    <p class="info-text">Мы совершили <strong>звонок</strong> на номер <strong th:text="${phone}">+7...</strong>.<br/> Пожалуйста, введите код подтверждения из звонка:</p>
 
     <form th:action="@{/complete-registration/verify}" method="post">
         <label for="code">Код подтверждения:</label>
-        <input type="text" id="code" name="code" required placeholder="Например: 1234" />
+        <input type="text" id="code" name="code" required placeholder="Введите код из звонка" pattern="\d*" inputmode="numeric" autocomplete="one-time-code"/>
 
         <button type="submit">Подтвердить</button>
     </form>
