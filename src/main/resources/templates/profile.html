@@ -10,7 +10,6 @@
         /* --- Общие стили --- */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            /* --- Используем фон пользователя --- */
             background-image: url("/static/uploads/фон.jpeg");
             background-size: cover;
             background-position: center center;
@@ -23,41 +22,39 @@
             justify-content: center;
             align-items: center;
             box-sizing: border-box;
-            color: #333; /* Базовый цвет текста */
+            color: #333;
         }
 
         /* --- Контейнер профиля --- */
         .profile-container {
-            background: rgba(255, 255, 255, 0.9); /* Белый полупрозрачный фон */
+            background: rgba(255, 255, 255, 0.7);
             padding: 30px 40px;
-            border-radius: 10px; /* Мягкие скругления */
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Мягкая тень */
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             width: 100%;
-            max-width: 580px; /* Чуть шире */
+            max-width: 580px;
             text-align: center;
             border: 1px solid rgba(0, 0, 0, 0.05);
         }
 
         /* --- Логотип --- */
         .logo-container {
-            margin-bottom: 25px; /* Больше отступ */
+            margin-bottom: 25px;
         }
         .logo {
             width: 100px;
             height: 100px;
-            /* border-radius: 50%; /* Убрал круглый логотип, если он квадратный */
-            object-fit: contain; /* Чтобы лого не искажался */
-            /* Путь к логотипу пользователя */
+            object-fit: contain;
             content: url("/static/uploads/Лого.png");
         }
 
         /* --- Заголовок --- */
         h2 {
-            margin-top: 0; /* Убираем отступ сверху */
+            margin-top: 0;
             margin-bottom: 25px;
-            color: #004d40; /* Темный зелено-бирюзовый */
+            color: #004d40;
             font-weight: 600;
-            font-size: 1.8em; /* Крупнее */
+            font-size: 1.8em;
             border-bottom: 1px solid #e0e0e0;
             padding-bottom: 15px;
         }
@@ -70,16 +67,15 @@
         .profile-info p {
             margin-bottom: 15px;
             font-size: 1.1em;
-            color: #424242; /* Темно-серый текст */
+            color: #424242;
             line-height: 1.6;
             padding-left: 15px;
-            /* Акцентная полоска в цвет гаммы */
-            border-left: 4px solid #00796b; /* Бирюзовый */
+            border-left: 4px solid #00796b;
         }
         .profile-info strong {
-            color: #004d40; /* Темный зелено-бирюзовый */
+            color: #004d40;
             display: inline-block;
-            min-width: 90px; /* Выравнивание */
+            min-width: 90px;
         }
 
         /* --- Секция Telegram --- */
@@ -92,7 +88,7 @@
         .telegram-info h3 {
             margin-top: 0;
             margin-bottom: 20px;
-            color: #00796b; /* Бирюзовый */
+            color: #00796b;
             font-size: 1.3em;
             font-weight: 600;
         }
@@ -104,27 +100,34 @@
         }
         .telegram-info .current-account {
             font-weight: bold;
-            color: #2e7d32; /* Темно-зеленый для привязанного */
+            color: #2e7d32;
         }
         .telegram-info .not-linked {
             font-style: italic;
-            color: #c62828; /* Темно-красный для непривязанного */
+            color: #c62828;
         }
         .telegram-info .link-button {
             margin-top: 15px;
         }
-        .telegram-info .info-text { /* Текст под кнопкой */
+        .telegram-info .info-text {
             font-size: 0.9em;
-            color: #757575; /* Серый */
+            color: #757575;
             margin-top: 15px;
         }
 
-        /* --- Кнопка привязки/изменения --- */
+        /* --- Кнопки --- */
+        .button-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: flex-start;
+            margin-top: 20px;
+        }
+
         .link-button {
             display: inline-block;
             padding: 12px 22px;
-            /* --- Используем основной цвет гаммы --- */
-            background-color: #00796b; /* Бирюзовый */
+            background-color: #00796b;
             color: white !important;
             text-decoration: none;
             border-radius: 5px;
@@ -136,9 +139,57 @@
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
         .link-button:hover {
-            background-color: #00695c; /* Темнее при наведении */
+            background-color: #00695c;
             text-decoration: none;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .secondary-button {
+            background-color: #607d8b;
+        }
+        .secondary-button:hover {
+            background-color: #546e7a;
+        }
+
+        .warning-button {
+            background-color: #f44336;
+        }
+        .warning-button:hover {
+            background-color: #d32f2f;
+        }
+
+        /* --- Аккордеон (раскрывающийся блок) --- */
+        .accordion {
+            margin-top: 20px;
+            text-align: left;
+        }
+        .accordion-header {
+            background-color: #e0f2f1;
+            padding: 12px 15px;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #00695c;
+        }
+        .accordion-content {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 0 0 5px 5px;
+            margin-top: 1px;
+            display: none;
+        }
+        .accordion-content.active {
+            display: block;
+        }
+        .accordion-content ol {
+            margin: 0;
+            padding-left: 20px;
+        }
+        .accordion-content li {
+            margin-bottom: 8px;
         }
 
         /* --- Сообщения (Успех/Ошибка/Инфо) --- */
@@ -154,6 +205,49 @@
         .error-message { background-color: #ffebee; border-color: #ffcdd2; color: #c62828; }
         .info-message { background-color: #e0f7fa; border-color: #b2ebf2; color: #006064; }
 
+        /* --- Модальное окно --- */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background-color: white;
+            padding: 25px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+        .modal-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .modal-button {
+            padding: 8px 15px;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .modal-cancel {
+            background-color: #e0e0e0;
+            color: #424242;
+        }
+        .modal-confirm {
+            background-color: #f44336;
+            color: white;
+        }
+
         /* --- Навигационные ссылки --- */
         .nav-links {
             margin-top: 35px;
@@ -161,12 +255,12 @@
             border-top: 1px solid #eee;
             text-align: center;
         }
-        .nav-links a, .nav-links button { /* Применяем стиль и к кнопке Выйти */
-            color: #00796b; /* Цвет ссылок в тон */
+        .nav-links a, .nav-links button {
+            color: #00796b;
             text-decoration: none;
             margin: 0 15px;
             font-size: 1em;
-            background: none; /* Стили для кнопки Выйти */
+            background: none;
             border: none;
             padding: 0;
             cursor: pointer;
@@ -178,18 +272,96 @@
 
         /* --- Адаптивность --- */
         @media (max-width: 600px) {
-            body { padding: 10px; align-items: flex-start; } /* Убираем центрирование по вертикали на мобильных */
+            body { padding: 10px; align-items: flex-start; }
             .profile-container { padding: 20px; margin-top: 10px;}
             h2 { font-size: 1.5em; }
             .profile-info p { font-size: 1em; }
             .telegram-info h3 { font-size: 1.1em; }
+            .button-group { flex-direction: column; }
+            .link-button { width: 100%; text-align: center; }
         }
     </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Обработчик аккордеона
+            const accordionHeaders = document.querySelectorAll('.accordion-header');
+            accordionHeaders.forEach(header => {
+                header.addEventListener('click', function() {
+                    const content = this.nextElementSibling;
+                    content.classList.toggle('active');
+                    this.querySelector('.accordion-icon').textContent =
+                        content.classList.contains('active') ? '▲' : '▼';
+                });
+            });
+
+            // Обработчик модального окна
+            const modal = document.getElementById('confirmModal');
+            const changeTelegramBtn = document.getElementById('changeTelegramBtn');
+            const confirmChangeBtn = document.getElementById('confirmChange');
+            const cancelChangeBtn = document.getElementById('cancelChange');
+
+            if (changeTelegramBtn) {
+                changeTelegramBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    modal.style.display = 'flex';
+                });
+            }
+
+            if (cancelChangeBtn) {
+                cancelChangeBtn.addEventListener('click', function() {
+                    modal.style.display = 'none';
+                });
+            }
+
+            if (confirmChangeBtn) {
+                confirmChangeBtn.addEventListener('click', function() {
+                    // Очистка данных Telegram
+                    clearTelegramData();
+
+                    // Переход на страницу привязки
+                    window.location.href = changeTelegramBtn.getAttribute('href');
+                });
+            }
+
+            // Функция для очистки данных Telegram в браузере
+            function clearTelegramData() {
+                // Очистка localStorage
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    if (key && (key.includes('telegram') || key.includes('tgauth'))) {
+                        localStorage.removeItem(key);
+                    }
+                }
+
+                // Очистка всех cookies
+                const cookies = document.cookie.split(";");
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i];
+                    const eqPos = cookie.indexOf("=");
+                    const name = eqPos > -1 ? cookie.substr(0, eqPos).trim() : cookie.trim();
+                    if (name && (name.includes('telegram') || name.includes('tg_'))) {
+                        document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
+                    }
+                }
+
+                console.log('Данные Telegram очищены');
+            }
+
+            // Кнопка очистки данных
+            const clearDataBtn = document.getElementById('clearTelegramData');
+            if (clearDataBtn) {
+                clearDataBtn.addEventListener('click', function() {
+                    clearTelegramData();
+                    alert('Данные Telegram очищены. Теперь вы можете привязать новый аккаунт.');
+                });
+            }
+        });
+    </script>
 </head>
 <body>
 <div class="profile-container">
     <div class="logo-container">
-        <img class="logo" src="/static/uploads/Лого.png" alt="Логотип" />
+        <img class="logo" alt="Логотип" />
     </div>
     <h2>Ваш профиль</h2>
 
@@ -212,30 +384,80 @@
 
     <div class="telegram-info" th:if="${user != null}" th:object="${user}">
         <h3>Привязка Telegram</h3>
+
+        <!-- Когда Telegram привязан -->
         <div th:if="*{telegramId != null}">
             <p><strong>Статус:</strong> <span class="current-account">Привязан</span></p>
             <p><strong>Аккаунт:</strong>
                 <span th:if="*{telegram != null}" th:text="'@' + *{telegram}"></span>
                 <span th:if="*{telegram == null}" th:text="'ID ' + *{telegramId}"></span>
             </p>
-            <p class="info-text">Чтобы изменить аккаунт, <a href="https://web.telegram.org/k/" target="_blank">выйдите из текущей сессии Telegram</a> в этом браузере и нажмите кнопку ниже.</p>
-            <a th:href="@{/profile/link-telegram}" class="link-button">Изменить аккаунт Telegram</a>
+
+            <div class="accordion">
+                <div class="accordion-header">
+                    Сменить аккаунт Telegram <span class="accordion-icon">▼</span>
+                </div>
+                <div class="accordion-content">
+                    <p>Для корректной смены аккаунта Telegram необходимо:</p>
+                    <ol>
+                        <li>Выйти из текущей сессии Telegram в браузере</li>
+                        <li>Очистить данные Telegram в вашем браузере (кэш, cookies)</li>
+                        <li>Нажать на кнопку "Сменить аккаунт Telegram"</li>
+                    </ol>
+                    <p>Если смена аккаунта не работает, используйте кнопку "Очистить данные Telegram" и попробуйте снова.</p>
+
+                    <div class="button-group">
+                        <a href="https://web.telegram.org/" target="_blank" class="link-button secondary-button">
+                            Открыть Telegram
+                        </a>
+                        <button id="clearTelegramData" class="link-button secondary-button">
+                            Очистить данные Telegram
+                        </button>
+                        <a id="changeTelegramBtn"
+                           th:href="@{/profile/unlink-telegram(redirect='/profile/link-telegram')}"
+                           class="link-button warning-button">
+                            Сменить аккаунт Telegram
+                        </a>
+                    </div>
+                </div>
+            </div>
         </div>
+
+        <!-- Когда Telegram не привязан -->
         <div th:if="*{telegramId == null}">
             <p><strong>Статус:</strong> <span class="not-linked">Не привязан</span></p>
-            <p class="info-text">Привяжите ваш аккаунт Telegram для быстрого входа в систему без пароля.</p>
-            <a th:href="@{/profile/link-telegram}" class="link-button">Привязать Telegram</a>
+            <p>Привяжите ваш аккаунт Telegram для быстрого входа в систему без пароля.</p>
+
+            <div class="button-group">
+                <a th:href="@{/profile/link-telegram}" class="link-button">
+                    Привязать Telegram
+                </a>
+            </div>
         </div>
     </div>
 
     <div class="nav-links">
         <a href="/">На главную</a>
         <span sec:authorize="isAuthenticated()">|
-                 <form th:action="@{/logout}" method="post" style="display: inline;">
-                     <button type="submit">Выйти</button> </form>
-             </span>
+            <form th:action="@{/logout}" method="post" style="display: inline;">
+                <button type="submit">Выйти</button>
+            </form>
+        </span>
     </div>
-
 </div>
+
+<!-- Модальное окно подтверждения смены Telegram -->
+<div id="confirmModal" class="modal">
+    <div class="modal-content">
+        <h3>Подтверждение смены Telegram</h3>
+        <p>Вы уверены, что хотите сменить привязанный аккаунт Telegram?</p>
+        <p>Убедитесь, что вы вышли из Telegram в вашем браузере перед продолжением.</p>
+        <div class="modal-buttons">
+            <button id="cancelChange" class="modal-button modal-cancel">Отмена</button>
+            <button id="confirmChange" class="modal-button modal-confirm">Сменить аккаунт</button>
+        </div>
+    </div>
+</div>
+
 </body>
 </html>

@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Telegram Авторизация</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="_csrf" th:content="${_csrf?.token}">
+    <meta name="_csrf_header" th:content="${_csrf?.headerName}">
+    <script>
+        // Функция для логирования в консоль
+        function log(message, level = 'INFO') {
+            console.log(`[${new Date().toTimeString().split(' ')[0]}] **[${level}]** ${message}`);
+        }
+
+        // Функция для декодирования Base64
+        function decodeBase64UrlSafe(base64) {
+            // Преобразуем URL-safe Base64 в стандартный Base64
+            const safe = base64.replace(/-/g, '+').replace(/_/g, '/');
+            try {
+                // Декодируем Base64
+                return atob(safe);
+            } catch (e) {
+                log("Ошибка при декодировании Base64: " + e.message, 'ERROR');
+                throw e;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            log('Страница загружена, инициализация...', 'INFO');
+            log('Начало обработки данных авторизации Telegram...', 'INFO');
+
+            const fullUrl = window.location.href;
+            log(`Полный URL: ${fullUrl}`, 'DEBUG');
+
+            if (window.location.hash) {
+                const hashFragment = window.location.hash;
+                log(`Хеш-фрагмент: ${hashFragment}`, 'DEBUG');
+
+                // Извлекаем параметр tgAuthResult
+                const match = hashFragment.match(/^#tgAuthResult=(.*)/);
+                if (match && match[1]) {
+                    const tgAuthResultValue = match[1];
+                    log(`Извлечен параметр tgAuthResult: ${tgAuthResultValue}`, 'DEBUG');
+
+                    try {
+                        // Сначала просто декодируем URL-кодирование
+                        const urlDecoded = decodeURIComponent(tgAuthResultValue);
+                        log(`URL-декодированное значение: ${urlDecoded}`, 'DEBUG');
+
+                        // Пробуем распарсить как JSON
+                        let authData;
+                        try {
+                            // Пробуем напрямую парсить как JSON
+                            authData = JSON.parse(urlDecoded);
+                        } catch (jsonError) {
+                            log(`Ошибка при прямом парсинге JSON, пробуем Base64-декодирование: ${jsonError.message}`, 'DEBUG');
+                            // Если не удалось напрямую, пробуем декодировать из Base64
+                            const base64Decoded = decodeBase64UrlSafe(urlDecoded);
+                            authData = JSON.parse(base64Decoded);
+                        }
+
+                        log(`Успешно получили данные авторизации: id=${authData.id}, username=${authData.username}`, 'INFO');
+
+                        // Отправляем на сервер
+                        const csrfToken = document.querySelector('meta[name="_csrf"]')?.getAttribute('content');
+                        const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.getAttribute('content');
+
+                        const headers = {
+                            'Content-Type': 'application/json'
+                        };
+
+                        if (csrfToken && csrfHeader) {
+                            headers[csrfHeader] = csrfToken;
+                        }
+
+                        fetch('/process-telegram-auth', {
+                            method: 'POST',
+                            headers: headers,
+                            body: JSON.stringify(authData)
+                        })
+                            .then(response => response.json())
+                        <!-- Заменяем этот код в функции fetch обработчика успешного ответа -->
+                    .then(data => {
+                            document.getElementById('loading').style.display = 'none';
+
+                            if (data.success) {
+                                document.getElementById('success').style.display = 'block';
+                                document.getElementById('success-message').textContent = data.message;
+
+                                // Добавляем параметр в URL редиректа для восстановления сессии
+                                const redirectUrl = (data.redirectUrl || '/') +
+                                    (data.redirectUrl.includes('?') ? '&' : '?') +
+                                    'telegram_auth=true&telegram_id=' +
+                                    (data.telegramId || '');
+
+                                // Используем window.location.href вместо формы
+                                setTimeout(() => {
+                                    window.location.href = redirectUrl;
+                                }, 1500);
+                            } else {
+                                document.getElementById('error').style.display = 'block';
+                                document.getElementById('error-message').textContent = data.message;
+                            }
+                        })
+                            .catch(err => {
+                                log(`Ошибка при отправке данных: ${err.message}`, 'ERROR');
+                                document.getElementById('loading').style.display = 'none';
+                                document.getElementById('error').style.display = 'block';
+                                document.getElementById('error-message').textContent =
+                                    'Ошибка при отправке данных на сервер: ' + err.message;
+                            });
+                    } catch (e) {
+                        log(`Ошибка при обработке данных: ${e.message}`, 'ERROR');
+                        document.getElementById('loading').style.display = 'none';
+                        document.getElementById('error').style.display = 'block';
+                        document.getElementById('error-message').textContent =
+                            'Ошибка при обработке данных авторизации Telegram: ' + e.message;
+                    }
+                } else {
+                    log('Не удалось извлечь tgAuthResult из хеш-фрагмента', 'ERROR');
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('error').style.display = 'block';
+                }
+            } else {
+                log('Хеш-фрагмент отсутствует в URL', 'ERROR');
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('error').style.display = 'block';
+            }
+        });
+    </script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #00796b;
+            text-align: center;
+        }
+        .message {
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+            display: none;
+        }
+        #error {
+            background-color: #ffebee;
+            border: 1px solid #f44336;
+            color: #d32f2f;
+        }
+        #success {
+            background-color: #e8f5e9;
+            border: 1px solid #4caf50;
+            color: #2e7d32;
+        }
+        #loading {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .actions {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .actions a {
+            display: inline-block;
+            padding: 8px 16px;
+            margin: 0 5px;
+            background-color: #00796b;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Обработка авторизации Telegram</h1>
+
+    <div id="success" class="message">
+        <h3>Успешная авторизация</h3>
+        <p id="success-message">Вы успешно авторизовались через Telegram.</p>
+        <p>Перенаправление...</p>
+    </div>
+
+    <div id="error" class="message">
+        <h3>Ошибка авторизации</h3>
+        <p id="error-message">Отсутствуют обязательные параметры в хеш-фрагменте URL: id, hash, auth_date</p>
+        <p>Пожалуйста, убедитесь, что вы перешли по корректной ссылке авторизации Telegram.</p>
+    </div>
+
+    <div id="loading">
+        <p>Обработка данных авторизации Telegram...</p>
+    </div>
+
+    <div class="actions">
+        <a href="/profile">Вернуться в профиль</a>
+        <a href="/">На главную</a>
+    </div>
+</div>
+</body>
+</html>

@@ -4,7 +4,6 @@ import com.nikolay.nikolay.model.User;
 import com.nikolay.nikolay.repository.UserRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.Query; // Импортируем Query
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -41,24 +40,12 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public Optional<User> findByTelegram(String telegram) {
-        // Добавим проверку на null или пустое имя пользователя
-        if (telegram == null || telegram.isBlank()) {
-            return Optional.empty();
-        }
-        return userRepository.findByTelegram(telegram);
-    }
-
     public Optional<User> findByTelegramId(Long telegramId) {
         // Добавим проверку на null ID
         if (telegramId == null) {
             return Optional.empty();
         }
         return userRepository.findByTelegramId(telegramId);
-    }
-
-    public Optional<User> findById(Long id) {
-        return userRepository.findById(id);
     }
 
     public Optional<User> findByPhone(String phone) {
@@ -71,13 +58,6 @@ public class UserService {
         return userRepository.findByPhone(normalizedPhone);
     }
 
-    /**
-     * Регистрирует нового пользователя или обновляет существующего.
-     * ВАЖНО: Этот метод может быть не лучшим выбором для простого обновления
-     * полей Telegram у существующего пользователя из-за сложности логики
-     * и потенциальных проблем с Hibernate/JPA при частичном обновлении.
-     * Используйте updateTelegramInfo или directUpdateTelegramFields для привязки.
-     */
     @Transactional
     public User registerUser(User user) {
         if (user == null) {
@@ -113,9 +93,7 @@ public class UserService {
             logger.info("Пользователь успешно сохранен/обновлен через saveAndFlush: ID={}, Phone={}, Telegram ID={}, Telegram={}",
                     savedUser.getId(), savedUser.getPhone(), savedUser.getTelegramId(), savedUser.getTelegram());
 
-            // Дополнительная проверка, что данные Telegram действительно сохранились (особенно важно при обновлении)
             if (user.getTelegramId() != null) {
-                // Очищаем кеш первого уровня Hibernate для чистоты эксперимента
                 entityManager.flush();
                 entityManager.clear();
                 // Перезагружаем пользователя из БД
@@ -165,88 +143,53 @@ public class UserService {
             logger.error("Попытка обновить информацию Telegram без ID пользователя.");
             return false;
         }
+
+        logger.info("Начало обновления Telegram данных для ID={}: telegramId={}, telegramUsername={}",
+                userId, telegramId, telegramUsername);
+
         try {
-            // Используем JPQL для обновления
-            String jpql = "UPDATE User u SET u.telegramId = :telegramId, u.telegram = :telegramUsername WHERE u.id = :userId";
-            Query query = entityManager.createQuery(jpql);
-            query.setParameter("telegramId", telegramId); // null разрешен
-            query.setParameter("telegramUsername", telegramUsername); // null разрешен
-            query.setParameter("userId", userId);
-
-            int updatedCount = query.executeUpdate();
-
-            if (updatedCount > 0) {
-                logger.info("Успешно обновлены поля Telegram через JPQL для пользователя ID={}. Строк обновлено: {}", userId, updatedCount);
-                // Принудительно сбрасываем изменения в БД и очищаем кеш,
-                // чтобы последующие чтения получили актуальные данные
-                entityManager.flush();
-                entityManager.clear();
-                return true;
-            } else {
-                // Это может произойти, если пользователя с таким ID нет, или данные уже были такими же
-                logger.warn("Поля Telegram для пользователя ID={} не были обновлены (возможно, ID не найден или данные совпадают). Строк обновлено: 0", userId);
-                // Проверим, существует ли пользователь
-                if (!userRepository.existsById(userId)) {
-                    logger.error("Пользователь с ID={} не найден для обновления Telegram.", userId);
-                }
-                return false; // Возвращаем false, так как фактического обновления не произошло
+            // Сначала проверим, существует ли пользователь и загрузим его
+            User user = userRepository.findById(userId).orElse(null);
+            if (user == null) {
+                logger.error("Пользователь с ID={} не найден для обновления Telegram.", userId);
+                return false;
             }
-        } catch (Exception e) {
-            logger.error("Ошибка при обновлении полей Telegram через JPQL для пользователя ID={}: {}", userId, e.getMessage(), e);
-            // Оборачиваем в RuntimeException для отката транзакции
-            throw new RuntimeException("Ошибка обновления Telegram данных: " + e.getMessage(), e);
-        }
-    }
 
+            // Логируем текущие значения
+            logger.info("Текущие данные: telegramId={}, telegram={}",
+                    user.getTelegramId(), user.getTelegram());
 
-    /**
-     * Метод для прямого обновления полей Telegram по телефону пользователя (использует updateTelegramInfo).
-     */
-    @Transactional
-    public boolean updateTelegramInfoByPhone(String phone, Long telegramId, String telegramUsername) {
-        Optional<User> userOpt = findByPhone(phone); // Используем наш метод с нормализацией
-        if (userOpt.isPresent()) {
-            return updateTelegramInfo(userOpt.get().getId(), telegramId, telegramUsername);
-        } else {
-            logger.warn("Попытка обновить Telegram по телефону, но пользователь {} не найден.", phone);
+            // Прямое обновление полей объекта
+            user.setTelegramId(telegramId);
+            user.setTelegram(telegramUsername);
+
+            // Сохраняем и синхронизируем с БД
+            userRepository.saveAndFlush(user);
+
+            // Очищаем кэш
+            entityManager.flush();
+            entityManager.clear();
+
+            // Проверяем результат
+            User updatedUser = userRepository.findById(userId).orElse(null);
+            if (updatedUser != null) {
+                logger.info("После обновления: telegramId={}, telegram={}",
+                        updatedUser.getTelegramId(), updatedUser.getTelegram());
+
+                // Проверка успешности обновления
+                boolean telegramIdUpdated = (telegramId == null && updatedUser.getTelegramId() == null) ||
+                        (telegramId != null && telegramId.equals(updatedUser.getTelegramId()));
+                boolean telegramUsernameUpdated = (telegramUsername == null && updatedUser.getTelegram() == null) ||
+                        (telegramUsername != null && telegramUsername.equals(updatedUser.getTelegram()));
+
+                return telegramIdUpdated && telegramUsernameUpdated;
+            }
+
             return false;
-        }
-    }
-
-    /**
-     * Прямой SQL-запрос для обновления Telegram полей (используется как запасной вариант).
-     * Менее предпочтителен, чем JPQL в updateTelegramInfo.
-     */
-    @Transactional
-    @Deprecated // Помечаем как устаревший, т.к. есть лучший метод updateTelegramInfo
-    public boolean directUpdateTelegramFields(String phone, Long telegramId, String telegramUsername) {
-        try {
-            String normalizedPhone = normalizePhoneNumber(phone);
-            if (normalizedPhone == null) {
-                logger.error("Некорректный номер телефона для прямого обновления: {}", phone);
-                return false;
-            }
-            // Используем нативный SQL
-            String sql = "UPDATE users SET telegram_id = :telegramId, telegram = :telegram WHERE phone = :phone";
-
-            int updated = entityManager.createNativeQuery(sql)
-                    .setParameter("telegramId", telegramId)
-                    .setParameter("telegram", telegramUsername) // Может быть null
-                    .setParameter("phone", normalizedPhone)
-                    .executeUpdate();
-
-            if (updated > 0) {
-                logger.info("Напрямую через EntityManager (Native SQL) обновлено строк: {} для телефона {}", updated, normalizedPhone);
-                entityManager.flush(); // Сброс изменений
-                entityManager.clear();   // Очистка кеша
-                return true;
-            } else {
-                logger.warn("Нативный SQL запрос не обновил строки для телефона {}", normalizedPhone);
-                return false;
-            }
         } catch (Exception e) {
-            logger.error("Ошибка при выполнении прямого Native SQL через EntityManager: {}", e.getMessage(), e);
-            throw new RuntimeException("Ошибка прямого обновления Telegram данных: " + e.getMessage(), e); // Откат транзакции
+            logger.error("Ошибка при обновлении данных Telegram для пользователя ID={}: {}",
+                    userId, e.getMessage(), e);
+            throw new RuntimeException("Ошибка обновления Telegram данных: " + e.getMessage(), e);
         }
     }
 
@@ -273,20 +216,6 @@ public class UserService {
         }
     }
 
-    @Transactional
-    public void deleteUser(Long userId) {
-        if (userId == null) {
-            logger.warn("Попытка удаления пользователя с null ID.");
-            return;
-        }
-        if (!userRepository.existsById(userId)) {
-            logger.warn("Попытка удаления несуществующего пользователя с ID: {}", userId);
-            return;
-        }
-        logger.info("Удаление пользователя с ID: {}", userId);
-        userRepository.deleteById(userId);
-    }
-
     /**
      * Нормализует номер телефона к международному формату +7XXXXXXXXXX.
      * @param phone Исходный номер телефона.
@@ -296,19 +225,16 @@ public class UserService {
         if (phone == null || phone.isBlank()) {
             return null;
         }
-        // Удаляем все нецифровые символы
         String digits = phone.replaceAll("[^\\d]", "");
 
-        // Обработка для российских номеров
         if (digits.startsWith("8") && digits.length() == 11) {
             digits = "7" + digits.substring(1);
         } else if (digits.length() == 10 && !digits.startsWith("7")) { // Если 10 цифр и не начинается с 7
             digits = "7" + digits;
         } else if (digits.startsWith("7") && digits.length() == 11) {
-            // Уже в формате 7XXXXXXXXXX, ничего не делаем
+
         } else if (digits.length() == 11 && !digits.startsWith("7")) {
-            // Возможно, международный номер другой страны, начинающийся не с 7 (например, +1...)
-            // Пока просто возвращаем как есть, если начинается с '+'
+
             if (phone.startsWith("+") && digits.length() >= 11) { // Проверяем исходную строку на '+'
                 return "+" + digits;
             } else {

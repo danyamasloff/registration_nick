@@ -18,13 +18,14 @@ import jakarta.servlet.http.HttpSession;
 import java.util.Optional;
 
 /**
- * Контроллер для управления профилем пользователя, включая привязку Telegram.
+ * Контроллер для управления профилем пользователя, включая
+ * отображение профиля, привязку и отвязку Telegram-аккаунта,
+ * а также страницу диагностики.
  */
 @Controller
 public class ProfileController {
 
     private static final Logger logger = LoggerFactory.getLogger(ProfileController.class);
-
     private final UserService userService;
 
     @Value("${telegram.bot.id}")
@@ -45,6 +46,9 @@ public class ProfileController {
 
     /**
      * Отображает страницу профиля пользователя.
+     *
+     * @param model модель MVC для передачи данных в представление
+     * @return имя шаблона профиля или редирект на страницу логина при ошибке
      */
     @GetMapping("/profile")
     @PreAuthorize("isAuthenticated()")
@@ -59,8 +63,6 @@ public class ProfileController {
         }
 
         model.addAttribute("user", userOpt.get());
-
-        // Добавляем для Telegram Widget
         model.addAttribute("telegramBotUsername", telegramBotUsername);
         model.addAttribute("telegramRedirectUri", telegramRedirectUri);
 
@@ -68,8 +70,13 @@ public class ProfileController {
     }
 
     /**
-     * Инициирует процесс привязки/изменения Telegram-аккаунта.
-     * Генерирует URL для Telegram Login Widget и перенаправляет пользователя.
+     * Инициирует процесс привязки или изменения Telegram-аккаунта.
+     * <p>Сохраняет в сессии телефон пользователя и флаг режима привязки,
+     * проверяет параметры конфигурации и генерирует URL для Telegram Login Widget.</p>
+     *
+     * @param session HTTP-сессия для хранения флага привязки
+     * @param redirectAttributes объект для передачи flash-сообщений при редиректе
+     * @return редирект на OAuth-URL Telegram или возврат на профиль при ошибке
      */
     @GetMapping("/profile/link-telegram")
     @PreAuthorize("isAuthenticated()")
@@ -78,11 +85,9 @@ public class ProfileController {
         String userPhone = authentication.getName();
         logger.info("Пользователь {} инициировал привязку Telegram", userPhone);
 
-        // Сохраняем телефон и флаг привязки в сессии
         session.setAttribute("phoneForTelegramLinking", userPhone);
         session.setAttribute("telegramLinkingMode", true);
 
-        // Проверяем наличие необходимых параметров
         if (telegramBotId == null || telegramRedirectUri == null || appBaseUrl == null) {
             logger.error("Не заданы параметры Telegram в application.properties");
             redirectAttributes.addFlashAttribute("error", "Ошибка конфигурации Telegram.");
@@ -90,11 +95,9 @@ public class ProfileController {
         }
 
         try {
-            // Для отладки: проверяем, что параметры заданы корректно
             logger.info("Telegram параметры: botId={}, redirectUri={}, baseUrl={}",
                     telegramBotId, telegramRedirectUri, appBaseUrl);
 
-            // Формируем URL для Telegram OAuth (без добавления параметров к redirect_uri)
             String telegramAuthUrl = UriComponentsBuilder.newInstance()
                     .scheme("https")
                     .host("oauth.telegram.org")
@@ -102,7 +105,7 @@ public class ProfileController {
                     .queryParam("bot_id", telegramBotId)
                     .queryParam("origin", appBaseUrl)
                     .queryParam("request_access", "write")
-                    .queryParam("return_to", telegramRedirectUri) // Используем чистый URL без параметров
+                    .queryParam("return_to", telegramRedirectUri)
                     .build()
                     .toUriString();
 
@@ -116,7 +119,39 @@ public class ProfileController {
     }
 
     /**
-     * Страница диагностики для отладки работы Telegram
+     * Отвязывает текущий Telegram-аккаунт от профиля пользователя.
+     * <p>Устанавливает поля telegramId и telegramUsername в null
+     * и сохраняет изменения в базе данных.</p>
+     *
+     * @param redirectAttributes объект для передачи flash-сообщений при редиректе
+     * @return редирект на страницу профиля
+     */
+    @GetMapping("/profile/unlink-telegram")
+    @PreAuthorize("isAuthenticated()")
+    public String unlinkTelegram(RedirectAttributes redirectAttributes) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String phone = auth.getName();
+        Optional<User> userOpt = userService.findByPhone(phone);
+        if (userOpt.isEmpty()) {
+            redirectAttributes.addFlashAttribute("error", "Профиль не найден");
+            return "redirect:/profile";
+        }
+        User user = userOpt.get();
+
+        boolean ok = userService.updateTelegramInfo(user.getId(), null, null);
+        if (ok) {
+            redirectAttributes.addFlashAttribute("success", "Telegram-аккаунт отвязан");
+        } else {
+            redirectAttributes.addFlashAttribute("error", "Не удалось отвязать Telegram");
+        }
+        return "redirect:/profile";
+    }
+
+    /**
+     * Отображает страницу диагностики для отладки работы Telegram.
+     *
+     * @param model модель MVC для передачи данных в представление
+     * @return имя шаблона страницы диагностики
      */
     @GetMapping("/profile/telegram-debug")
     @PreAuthorize("isAuthenticated()")

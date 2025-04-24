@@ -23,7 +23,7 @@
       width: 100%;
       max-width: 980px; /* Максимальная ширина контента */
       /* --- 2. Полупрозрачный фон для контента --- */
-      background: rgba(255, 255, 255, 0.85); /* Белый с 85% непрозрачности */
+      background: rgba(255, 255, 255, 0.55); /* Белый с 85% непрозрачности */
       padding: 30px; /* Внутренние отступы */
       border-radius: 10px;
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -39,9 +39,10 @@
     }
 
     .logo {
-      max-width: 150px;
-      height: auto;
-      /* margin-bottom убран, используется контейнер */
+      width: 100px; /* Размер лого */
+      height: 100px;
+      margin-bottom: 20px;
+      content: url("/static/uploads/Лого.png"); /* Путь к лого */
     }
 
     /* Запрет выделения и перетаскивания */

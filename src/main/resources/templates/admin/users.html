@@ -2,26 +2,169 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
   <title>Список пользователей</title>
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-image: url("/static/uploads/фон.jpeg");
+      background-size: cover;
+      background-position: center center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      margin: 0;
+      padding: 40px 20px;
+      min-height: 100vh;
+      box-sizing: border-box;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    .main-container {
+      width: 100%;
+      max-width: 1100px;
+      background: rgba(255, 255, 255, 0.75);
+      padding: 30px 40px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      border: 1px solid rgba(0, 0, 0, 0.05);
+      text-align: center;
+    }
+
+    .logo {
+      width: 100px;
+      height: 100px;
+      margin-bottom: 15px;
+      content: url("/static/uploads/Лого.png");
+    }
+
+    h1 {
+      color: #004d40;
+      margin-top: 0;
+      margin-bottom: 30px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid #e0e0e0;
+      font-size: 1.8em;
+    }
+
+    .actions-bar {
+      margin-bottom: 25px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+
+    .button-link {
+      display: inline-block;
+      padding: 10px 20px;
+      color: white !important;
+      text-decoration: none;
+      border-radius: 5px;
+      font-size: 0.95em;
+      transition: background-color 0.2s ease;
+      border: none;
+      cursor: pointer;
+    }
+
+    .btn-primary { background-color: #00796b; }
+    .btn-primary:hover { background-color: #00695c; }
+
+    .btn-secondary { background-color: #607d8b; }
+    .btn-secondary:hover { background-color: #546e7a; }
+
+    .user-table-container {
+      overflow-x: auto;
+    }
+
+    .user-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      font-size: 0.95em;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .user-table th, .user-table td {
+      padding: 12px 15px;
+      text-align: left;
+      border: 1px solid #e0e0e0;
+    }
+
+    .user-table th {
+      background-color: #e0f2f1;
+      color: #004d40;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .user-table tbody tr {
+      background-color: #ffffff;
+      transition: background-color 0.15s ease;
+    }
+
+    .user-table tbody tr:nth-of-type(even) {
+      background-color: #f8f9fa;
+    }
+
+    .user-table tbody tr:hover {
+      background-color: #e9ecef;
+    }
+
+    .user-table td {
+      color: #495057;
+      word-break: break-word;
+    }
+
+    @media (max-width: 768px) {
+      body { padding: 20px 10px; }
+      .main-container { padding: 20px; }
+      h1 { font-size: 1.5em; }
+      .actions-bar { flex-direction: column; align-items: stretch; }
+      .button-link { text-align: center; }
+      .user-table th, .user-table td { padding: 8px 10px; font-size: 0.9em; }
+    }
+
+  </style>
 </head>
 <body>
-<h1>Список пользователей</h1>
-<a href="/admin/users/export">Скачать CSV</a>
-<table border="1">
-  <tr>
-    <th>ID</th>
-    <th>Телефон</th>
-    <th>Telegram</th>
-    <th>Реферальная ссылка</th>
-    <th>Роль</th>
-  </tr>
-  <tr th:each="user : ${users}">
-    <td th:text="${user.id}"></td>
-    <td th:text="${user.phone}"></td>
-    <td th:text="${user.telegram}"></td>
-    <td th:text="${user.referralLink}"></td>
-    <td th:text="${user.role}"></td>
-  </tr>
-</table>
-<a href="/admin">Назад в панель</a>
+<div class="main-container">
+  <img class="logo" alt="Логотип" />
+  <h1>Список пользователей</h1>
+
+  <div class="actions-bar">
+    <a href="/admin" class="button-link btn-secondary">Назад в панель</a>
+    <a href="/admin/users/export" class="button-link btn-primary">Скачать CSV</a>
+  </div>
+
+  <div class="user-table-container">
+    <table class="user-table">
+      <thead>
+      <tr>
+        <th>ID</th>
+        <th>Телефон</th>
+        <th>Telegram</th>
+        <th>Реф. ссылка</th>
+        <th>Роль</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:if="${users == null or users.isEmpty()}">
+        <td colspan="5" style="text-align: center; padding: 20px; color: #6c757d;">Нет зарегистрированных пользователей.</td>
+      </tr>
+      <tr th:each="user : ${users}">
+        <td th:text="${user.id}"></td>
+        <td th:text="${user.phone}"></td>
+        <td th:text="${user.telegram ?: '-'}"></td>
+        <td th:text="${user.referralLink ?: '-'}"></td>
+        <td th:text="${user.role}"></td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
 </body>
 </html>

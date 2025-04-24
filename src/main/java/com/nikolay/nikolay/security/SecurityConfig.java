@@ -41,6 +41,8 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+                // Включаем поддержку CORS для запросов от Telegram
+                .cors().and()
                 // Настраиваем провайдер аутентификации (для проверки логина/пароля)
                 .authenticationProvider(authenticationProvider())
                 // Настраиваем авторизацию HTTP-запросов
@@ -56,6 +58,7 @@ public class SecurityConfig {
                                 "/register/verify",    // Проверка кода
                                 "/login",              // Страница входа
                                 "/telegram-callback",  // Callback от Telegram (должен быть доступен без аутентификации)
+                                "/process-telegram-auth", // Обработка данных от Telegram
                                 "/static/**",          // Статические ресурсы (CSS, JS, изображения из /static/)
                                 "/uploads/**",         // Статические ресурсы из /static/uploads/ (если используется)
                                 "/css/**", "/js/**", "/images/**" // Явное разрешение для стандартных папок статики

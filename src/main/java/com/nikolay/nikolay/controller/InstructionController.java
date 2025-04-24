@@ -4,7 +4,10 @@ import com.nikolay.nikolay.enums.Role;
 import com.nikolay.nikolay.model.Instruction;
 import com.nikolay.nikolay.model.User;
 import com.nikolay.nikolay.service.InstructionService;
+import com.nikolay.nikolay.service.TelegramAuthService;
 import com.nikolay.nikolay.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
@@ -13,6 +16,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.ArrayList;
@@ -30,11 +34,13 @@ public class InstructionController {
 
     private final InstructionService instructionService;
     private final UserService userService;
+    private final TelegramAuthService telegramAuthService;
 
     // Конструктор для внедрения зависимостей
-    public InstructionController(InstructionService instructionService, UserService userService) {
+    public InstructionController(InstructionService instructionService, UserService userService, TelegramAuthService telegramAuthService) {
         this.instructionService = instructionService;
         this.userService = userService;
+        this.telegramAuthService = telegramAuthService;
     }
 
     /**
@@ -44,7 +50,35 @@ public class InstructionController {
      * @return Имя шаблона главной страницы ("index").
      */
     @GetMapping("/")
-    public String home(Model model) {
+    public String home(Model model,
+                       HttpServletRequest request,
+                       @RequestParam(required = false) String telegram_auth,
+                       @RequestParam(required = false) String telegram_id) {
+
+        // Восстановление авторизации после редиректа с Telegram
+        if ("true".equals(telegram_auth) && telegram_id != null && !telegram_id.isEmpty()) {
+            try {
+                // Преобразуем строковый ID в Long
+                Long telegramIdLong = Long.parseLong(telegram_id);
+
+                // Ищем пользователя по Telegram ID
+                Optional<User> userOpt = userService.findByTelegramId(telegramIdLong);
+                if (userOpt.isPresent()) {
+                    User user = userOpt.get();
+                    logger.info("Восстановление авторизации для пользователя {} с Telegram ID: {}",
+                            user.getPhone(), telegramIdLong);
+
+                    // Принудительно аутентифицируем пользователя
+                    telegramAuthService.authenticateUser(user);
+                    model.addAttribute("telegramAuthRefreshed", true);
+                }
+            } catch (NumberFormatException e) {
+                logger.error("Ошибка преобразования Telegram ID: {}", telegram_id);
+            } catch (Exception e) {
+                logger.error("Ошибка при восстановлении авторизации: {}", e.getMessage());
+            }
+        }
+
         // Получаем текущую аутентификацию из контекста Spring Security
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 

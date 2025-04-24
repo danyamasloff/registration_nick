@@ -2,95 +2,204 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
   <title>Управление инструкциями</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f4f4f4;
-      margin: 0;
-      padding: 20px;
-    }
-    h1 {
-      text-align: center;
-      background-color: #343a40;
-      color: white;
-      padding: 20px;
-      margin-bottom: 20px;
-    }
-    .container {
-      max-width: 960px;
-      margin: 0 auto;
-      background: rgba(255, 255, 255, 0.85); /* прозрачный фон */
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    }
-    .instruction {
-      border-bottom: 1px solid #ddd;
-      padding: 15px 0;
-    }
-    .instruction:last-child {
-      border-bottom: none;
-    }
-    .instruction-title {
-      font-weight: bold;
-      font-size: 1.1em;
-    }
-    .instruction-content {
-      max-height: 3.6em; /* примерно две строки */
-      overflow: hidden;
-      position: relative;
-    }
-    .instruction-content::after {
-      content: '...';
-      position: absolute;
-      bottom: 0;
-      right: 0;
-      background: rgba(255, 255, 255, 0.85);
-      padding-left: 10px;
-    }
-    .instruction img {
-      max-width: 100px;
-      height: auto;
-      border-radius: 5px;
-      margin: 10px 5px 0 0;
-    }
-    .actions {
-      margin-top: 10px;
-    }
-    .actions a {
-      text-decoration: none;
-      color: #007bff;
-      margin-right: 10px;
-    }
-    .actions a:hover {
-      text-decoration: underline;
-    }
-    .add-button {
-      display: block;
-      width: fit-content;
-      background-color: #007bff;
-      color: white;
-      padding: 10px 15px;
-      text-decoration: none;
-      border-radius: 5px;
-      margin-bottom: 15px;
-    }
-    .add-button:hover {
-      background-color: #0056b3;
-    }
-  </style>
+  <link rel="icon" type="image/x-icon" href="/favicon.ico"> <meta name="viewport" content="width=device-width, initial-scale=1.0"> <style>
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Более современный шрифт */
+    /* --- Фон страницы (обновлен) --- */
+    background-image: url("/static/uploads/фон.jpeg");
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    margin: 0;
+    padding: 40px 20px; /* Добавлены отступы */
+    min-height: 100vh;
+    box-sizing: border-box;
+    display: flex; /* Центрирование контейнера */
+    justify-content: center;
+    align-items: flex-start; /* Выравнивание по верху */
+  }
+
+  .main-container {
+    width: 100%;
+    max-width: 960px;
+    /* --- Прозрачность плашки (изменено) --- */
+    background: rgba(255, 255, 255, 0.6); /* Белый с 60% непрозрачности */
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    text-align: center; /* Центрируем лого и заголовок */
+    border: 1px solid rgba(0, 0, 0, 0.05);
+  }
+
+  /* --- Логотип (добавлен) --- */
+  .logo {
+    width: 100px;
+    height: 100px;
+    margin-bottom: 15px;
+    /* Путь к логотипу */
+    content: url("/static/uploads/Лого.png");
+  }
+
+  h1 {
+    text-align: center;
+    color: #004d40; /* Цвет из вашей темы */
+    margin-top: 0;
+    margin-bottom: 30px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #e0e0e0;
+    font-size: 1.8em;
+  }
+
+  /* Ссылка "Назад" стилизована */
+  .back-link {
+    display: inline-block;
+    margin-bottom: 25px;
+    padding: 8px 15px;
+    background-color: #607d8b; /* Вторичный цвет */
+    color: white !important;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 0.9em;
+    transition: background-color 0.2s ease;
+  }
+  .back-link:hover {
+    background-color: #546e7a;
+    text-decoration: none;
+  }
+
+  .instructions-list {
+    text-align: left; /* Возвращаем выравнивание для списка */
+    margin-top: 20px;
+  }
+
+  .instruction {
+    border: 1px solid #e0e0e0;
+    background-color: rgba(255, 255, 255, 0.7); /* Чуть менее прозрачный фон для читаемости */
+    padding: 15px 20px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column; /* Располагаем элементы друг под другом */
+    gap: 8px; /* Пространство между элементами */
+    transition: box-shadow 0.2s ease;
+  }
+  .instruction:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .instruction-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap; /* Перенос на новую строку при необходимости */
+    gap: 10px;
+  }
+
+  .instruction-title {
+    font-weight: bold;
+    font-size: 1.2em;
+    color: #333;
+    flex-grow: 1; /* Занимает доступное пространство */
+  }
+
+  .instruction-content {
+    font-size: 0.95em;
+    color: #555;
+    line-height: 1.5;
+    /* Убираем ограничение по высоте и троеточие для полного отображения */
+    /* max-height: 3.6em; */
+    /* overflow: hidden; */
+    /* position: relative; */
+  }
+  /* Убираем троеточие */
+  /* .instruction-content::after { content: none; } */
+
+  .instruction-content img { /* Стили для картинок внутри контента */
+    max-width: 100%; /* Картинки не вылезают за контейнер */
+    height: auto;
+    display: block; /* Убираем лишние отступы под картинками */
+    margin: 10px 0; /* Отступы */
+    border-radius: 5px; /* Слегка скруглим углы */
+  }
+
+  .actions {
+    margin-top: 10px;
+    display: flex;
+    gap: 10px; /* Пространство между кнопками */
+    flex-wrap: wrap;
+  }
+
+  .actions a, .button-link { /* Общий стиль для ссылок-кнопок */
+    text-decoration: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 0.9em;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    text-align: center;
+  }
+
+  /* Стилизация ссылок действий */
+  .action-edit {
+    background-color: #00796b; /* Цвет из вашей темы */
+    color: white !important;
+  }
+  .action-edit:hover { background-color: #00695c; }
+
+  .action-delete {
+    background-color: #f44336; /* Красный для удаления */
+    color: white !important;
+  }
+  .action-delete:hover { background-color: #d32f2f; }
+
+  /* Кнопка "Добавить" */
+  .add-button {
+    background-color: #2e7d32; /* Зеленый */
+    color: white !important;
+    margin-bottom: 20px;
+    display: inline-block; /* Чтобы не занимала всю ширину */
+    padding: 10px 20px; /* Крупнее */
+  }
+  .add-button:hover {
+    background-color: #1b5e20;
+  }
+
+  /* Адаптивность */
+  @media (max-width: 600px) {
+    body { padding: 20px 10px; }
+    .main-container { padding: 20px; }
+    h1 { font-size: 1.5em; }
+    .instruction-header { flex-direction: column; align-items: flex-start; }
+    .actions { justify-content: flex-start; }
+  }
+</style>
 </head>
 <body>
-<h1>Инструкции</h1>
-<a href="/admin">Назад в панель</a>
-<div class="container">
-  <a href="/admin/instructions/new" class="add-button">Добавить инструкцию</a>
-  <div th:each="instruction : ${instructions}" class="instruction">
-    <div class="instruction-title" th:text="${instruction.title}"></div>
-    <div class="instruction-content" th:utext="${instruction.content}"></div>
-    <div class="actions">
-      <a th:href="@{/admin/instructions/edit/{id}(id=${instruction.id})}">Редактировать</a>
-      <a th:href="@{/admin/instructions/delete/{id}(id=${instruction.id})}" onclick="return confirm('Удалить инструкцию?');">Удалить</a>
+<div class="main-container">
+  <img class="logo" alt="Логотип" />
+  <h1>Управление инструкциями</h1>
+
+  <a href="/admin" class="back-link">Назад в панель администрирования</a>
+  <br/> <a href="/admin/instructions/new" class="add-button button-link">Добавить новую инструкцию</a>
+
+  <div class="instructions-list">
+    <div th:if="${instructions == null or instructions.isEmpty()}" style="padding: 15px; background-color: #fff3cd; border-radius: 5px; color: #856404; border: 1px solid #ffeeba;">
+      <p>Пока нет ни одной инструкции.</p>
+    </div>
+
+    <div th:each="instruction : ${instructions}" class="instruction">
+      <div class="instruction-header">
+        <div class="instruction-title" th:text="${instruction.title}">Название инструкции</div>
+        <div class="actions">
+          <a th:href="@{/admin/instructions/edit/{id}(id=${instruction.id})}" class="button-link action-edit">Редактировать</a>
+          <a th:href="@{/admin/instructions/delete/{id}(id=${instruction.id})}"
+             onclick="return confirm('Вы уверены, что хотите удалить эту инструкцию? Это действие необратимо.');"
+             class="button-link action-delete">Удалить</a>
+        </div>
+      </div>
+      <div class="instruction-content" th:utext="${instruction.content}">Содержимое инструкции...</div>
     </div>
   </div>
 </div>
