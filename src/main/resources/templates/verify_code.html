@@ -1,105 +1,180 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Подтверждение телефона</title>
+    <link rel="icon" type="image/x-icon" th:href="@{/favicon.ico}">
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-image: url("/static/uploads/фон.jpeg");
             background-size: cover;
-            background-position: center;
+            background-position: center center;
             background-repeat: no-repeat;
+            background-attachment: fixed;
             margin: 0;
             height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
+            padding: 15px;
+            box-sizing: border-box;
         }
 
-        .register-container { /* Используем тот же класс для единообразия */
-            /* --- 4. Полупрозрачный фон --- */
-            background: rgba(255, 255, 255, 0.55); /* Белый с 85% непрозрачности */
+        .verify-container {
+            background: rgba(255, 255, 255, 0.9);
             padding: 40px;
             border-radius: 10px;
             text-align: center;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            width: 320px; /* Немного шире */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 380px;
+            border: 1px solid rgba(0, 0, 0, 0.05);
         }
 
         .logo {
-            width: 120px;
-            height: 120px;
+            width: 100px;
+            height: 100px;
             margin-bottom: 20px;
         }
 
         h2 {
-            margin-bottom: 15px;
+            margin-top: 0;
+            margin-bottom: 25px;
+            color: #004d40;
+            font-weight: 600;
         }
 
-        .info-text { /* Стиль для поясняющего текста */
-            margin-bottom: 20px;
-            font-size: 0.95em;
+        .info-text {
+            margin-bottom: 25px;
+            font-size: 1em;
             color: #333;
-            line-height: 1.4;
+            line-height: 1.6;
+        }
+
+        .highlight {
+            font-weight: bold;
+            color: #00796b;
         }
 
         .error-message {
-            color: red;
-            margin-bottom: 20px;
-            background-color: #f8d7da;
-            border-left: 6px solid #f44336;
-            padding: 10px;
+            color: #d32f2f;
+            margin: 0 0 20px;
+            background-color: #ffebee;
+            border-left: 4px solid #d32f2f;
+            padding: 12px;
             border-radius: 5px;
             text-align: left;
+            font-size: 0.9em;
+        }
+
+        .existing-user-message {
+            background-color: #e8f5e9;
+            border-left: 4px solid #4caf50;
+            color: #2e7d32;
+            padding: 12px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            text-align: left;
+            font-size: 0.9em;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
         }
 
         label {
             display: block;
-            margin-bottom: 5px;
+            margin: 0 0 8px;
             text-align: left;
+            font-weight: 600;
+            color: #333;
+            font-size: 0.95em;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 25px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-size: 1.2em;
+            text-align: center;
+            letter-spacing: 3px;
             font-weight: bold;
         }
 
-        input[type="text"], input[type="hidden"] { /* Стилизуем и скрытые поля для консистентности, хотя они не видны */
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 20px; /* Больше отступ под полем кода */
-            border-radius: 5px;
-            border: 1px solid #ccc;
-            box-sizing: border-box;
+        input[type="text"]:focus {
+            border-color: #00796b;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(0, 121, 107, 0.2);
         }
 
         button {
             width: 100%;
-            padding: 12px; /* Увеличим кнопку */
-            background-color: #4CAF50;
+            padding: 12px;
+            background-color: #00796b;
             color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
             font-size: 1em;
+            font-weight: 600;
+            transition: background-color 0.2s ease;
         }
 
         button:hover {
-            background-color: #45a049;
+            background-color: #00695c;
+        }
+
+        @media (max-width: 480px) {
+            .verify-container {
+                padding: 25px;
+            }
+            .logo {
+                width: 80px;
+                height: 80px;
+            }
         }
     </style>
 </head>
 <body>
-<div class="register-container">
+<div class="verify-container">
     <img class="logo" src="/static/uploads/Лого.png" alt="Логотип" />
+
     <h2>Подтверждение номера</h2>
 
     <div th:if="${errorMessage}" class="error-message">
         <p th:text="${errorMessage}"></p>
     </div>
 
-    <p class="info-text">Мы отправили <strong>звонок</strong> на номер <strong th:text="${phone ?: user.phone}">+7...</strong>.<br/>
-        Пожалуйста, введите код подтверждения из звонка.</p>
+    <div th:if="${existingUser}" class="existing-user-message">
+        Обнаружен существующий аккаунт с этим номером телефона.
+        После подтверждения кода вы получите доступ к новой инструкции.
+    </div>
 
-    <form th:action="@{/register/verify}" method="post" th:object="${user}">
+    <p class="info-text">
+        Мы совершили <span class="highlight">звонок</span> на номер
+        <span class="highlight" th:text="${phone ?: user.phone}">+7...</span>.<br/>
+        Пожалуйста, введите код подтверждения из звонка:
+    </p>
+
+    <form th:action="@{/register/verify}" method="post">
         <label for="code">Код подтверждения:</label>
-        <input type="text" id="code" name="code" required placeholder="Введите код из звонка" pattern="\d*" inputmode="numeric" autocomplete="one-time-code"/> <button type="submit">Подтвердить и зарегистрироваться</button>
+        <input type="text" id="code" name="code" required
+               placeholder="____"
+               pattern="\d*"
+               inputmode="numeric"
+               autocomplete="one-time-code"
+               maxlength="4"
+               autofocus />
+
+        <button type="submit" th:text="${existingUser ? 'Подтвердить и получить доступ' : 'Подтвердить и зарегистрироваться'}">
+            Подтвердить
+        </button>
     </form>
 </div>
 </body>
