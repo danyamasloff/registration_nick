@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8"> <meta name="robots" content="noindex, nofollow">
     <title>Инструкции к оборудованию</title>
-    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="icon" type="image/x-icon" th:href="@{/favicon.ico}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body {
@@ -182,7 +182,7 @@
 
 
 <div class="container">
-    <img class="logo" alt="Логотип" /> <h1>Инструкции к медицинским аппаратам</h1>
+    <img class="logo" alt="Логотип" /> <h1>Инструкции к оборудованию</h1>
 
     <div th:if="${error}" class="message error-message"> <p th:text="${error}"></p> </div>
     <div th:if="${success}" class="message success-message"> <p th:text="${success}"></p> </div>

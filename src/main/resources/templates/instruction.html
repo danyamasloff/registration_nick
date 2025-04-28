@@ -2,47 +2,49 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta name="robots" content="noindex, nofollow">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title th:text="${instruction.title}">Инструкция</title>
+  <link rel="icon" type="image/x-icon" th:href="@{/favicon.ico}">
   <style>
     body {
-      font-family: Arial, sans-serif;
-      /* --- 1. Фон страницы (уже был, такой же как на главной) --- */
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background-image: url("/static/uploads/фон.jpeg");
       background-size: cover;
-      background-position: center;
+      background-position: center center;
       background-repeat: no-repeat;
-      padding: 20px; /* Внешний отступ для body */
+      background-attachment: fixed; /* Фиксированный фон */
+      padding: 20px;
       margin: 0;
-      min-height: 100vh; /* Минимальная высота */
-      display: flex; /* Центрирование контейнера */
+      min-height: 100vh;
+      display: flex;
       justify-content: center;
-      align-items: flex-start; /* Выравнивание контейнера по верху */
+      align-items: flex-start;
     }
 
     .container {
       width: 100%;
-      max-width: 980px; /* Максимальная ширина контента */
-      /* --- 2. Полупрозрачный фон для контента --- */
-      background: rgba(255, 255, 255, 0.55); /* Белый с 85% непрозрачности */
-      padding: 30px; /* Внутренние отступы */
+      max-width: 980px;
+      background: rgba(255, 255, 255, 0.4); /* Прозрачный фон */
+      padding: 40px;
       border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-      text-align: left; /* Выравнивание текста по левому краю */
-      overflow-y: auto; /* Добавляем скролл, если контент не влезает */
-      margin-top: 20px; /* Отступ сверху для контейнера */
-      margin-bottom: 20px; /* Отступ снизу */
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      text-align: left;
+      overflow-y: auto;
+      margin-top: 20px;
+      margin-bottom: 20px;
+      border: 1px solid rgba(0, 0, 0, 0.05);
     }
 
-    .logo-container { /* Отдельный контейнер для логотипа, чтобы он был по центру */
+    .logo-container {
       text-align: center;
-      margin-bottom: 20px;
+      margin-bottom: 25px;
     }
 
     .logo {
-      width: 100px; /* Размер лого */
+      width: 100px;
       height: 100px;
-      margin-bottom: 20px;
-      content: url("/static/uploads/Лого.png"); /* Путь к лого */
+      margin-bottom: 15px;
     }
 
     /* Запрет выделения и перетаскивания */
@@ -52,6 +54,7 @@
       -moz-user-select: none;
       -ms-user-select: none;
     }
+
     img {
       pointer-events: none;
       -webkit-user-drag: none;
@@ -60,66 +63,131 @@
       user-drag: none;
     }
 
-    /* Стили для контента инструкции (Thymeleaf th:utext) */
-    .instruction-content {
-      /* Можно добавить стили для текста, списков, заголовков внутри контента */
-      line-height: 1.6; /* Межстрочный интервал */
-      text-align: justify; /* Выравнивание по ширине */
+    /* Заголовок инструкции */
+    h1 {
+      text-align: center;
+      color: #004d40;
+      font-size: 1.8em;
+      margin-bottom: 25px;
+      font-weight: 600;
     }
-    .instruction-content img { /* Стили для картинок внутри контента */
-      max-width: 100%; /* Картинки не вылезают за контейнер */
+
+    /* Стили для контента инструкции */
+    .instruction-content {
+      line-height: 1.6;
+      text-align: justify;
+      color: #333;
+    }
+
+    .instruction-content h2 {
+      color: #00695c;
+      font-size: 1.5em;
+      margin-top: 25px;
+    }
+
+    .instruction-content h3 {
+      color: #00796b;
+      font-size: 1.3em;
+      margin-top: 20px;
+    }
+
+    .instruction-content p {
+      margin-bottom: 15px;
+    }
+
+    .instruction-content ul,
+    .instruction-content ol {
+      margin-bottom: 15px;
+      padding-left: 25px;
+    }
+
+    .instruction-content li {
+      margin-bottom: 8px;
+    }
+
+    .instruction-content img {
+      max-width: 100%;
       height: auto;
-      display: block; /* Убираем лишние отступы под картинками */
-      margin: 15px auto; /* Отступы и центрирование */
-      border-radius: 5px; /* Слегка скруглим углы */
+      display: block;
+      margin: 25px auto;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     }
 
     /* Кнопка "Назад" */
-    .button-container { /* Контейнер для центрирования кнопки */
+    .button-container {
       text-align: center;
-      margin-top: 30px;
+      margin-top: 40px;
     }
+
     .back-button {
       display: inline-block;
-      padding: 10px 20px; /* Увеличим паддинг */
-      /* margin-top убран, используется контейнер */
-      background-color: #007bff;
+      padding: 12px 25px;
+      background-color: #00796b;
       color: white;
       text-decoration: none;
       border-radius: 5px;
-      /* text-align убран, используется контейнер */
-      border: none; /* Убираем границу */
+      border: none;
       cursor: pointer;
-      font-size: 1em; /* Размер шрифта */
-    }
-    .back-button:hover {
-      background-color: #0056b3;
+      font-size: 1em;
+      font-weight: 500;
+      transition: background-color 0.2s ease, box-shadow 0.2s ease;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
 
-    /* Адаптивность (остается без изменений) */
-    @media (max-width: 460px) {
-      body { padding: 10px; } /* Уменьшаем отступы на маленьких экранах */
-      .container {
-        padding: 15px;
+    .back-button:hover {
+      background-color: #00695c;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Горизонтальный разделитель */
+    hr {
+      border: 0;
+      height: 1px;
+      background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0));
+      margin: 25px 0;
+    }
+
+    /* Адаптивность */
+    @media (max-width: 768px) {
+      body { padding: 10px; }
+      .container { padding: 25px; }
+      h1 { font-size: 1.5em; }
+    }
+
+    @media (max-width: 480px) {
+      .container { padding: 20px; }
+      h1 { font-size: 1.3em; }
+      .back-button {
+        padding: 10px 20px;
+        width: 100%;
+        box-sizing: border-box;
       }
     }
   </style>
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-      // Запрет копирования (остается)
+      // Запрет копирования
       document.body.addEventListener('copy', function(e) { e.preventDefault(); });
-      // Запрет контекстного меню (остается)
+      // Запрет контекстного меню
       document.body.addEventListener('contextmenu', function(e) { e.preventDefault(); });
     });
   </script>
 </head>
 <body>
-<div class="container no-copy"> <div class="logo-container">
-  <img class="logo" src="/static/uploads/Лого.png" alt="Логотип" />
-</div>
-  <h1 th:text="${instruction.title}" style="text-align: center;">Заголовок Инструкции</h1> <hr/> <div class="instruction-content" th:utext="${instruction.content}">
+<div class="container no-copy">
+  <div class="logo-container">
+    <img class="logo" src="/static/uploads/Лого.png" alt="Логотип" />
+  </div>
+
+  <h1 th:text="${instruction.title}">Заголовок Инструкции</h1>
+
+  <hr/>
+
+  <div class="instruction-content" th:utext="${instruction.content}">
     <p>Содержимое инструкции...</p>
   </div>
+
   <div class="button-container">
     <a href="/" class="back-button">Назад к списку</a>
   </div>
