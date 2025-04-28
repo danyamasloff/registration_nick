@@ -6,6 +6,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.Arrays;
@@ -24,6 +25,18 @@ public class WebConfig implements WebMvcConfigurer {
                 .allowedMethods("GET", "POST")
                 .allowedHeaders("*")
                 .allowCredentials(true);
+    }
+
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        // Особая обработка для favicon.ico
+        registry.addResourceHandler("/favicon.ico")
+                .addResourceLocations("classpath:/static/")
+                .setCachePeriod(0); // Отключаем кэширование для тестирования
+
+        // Стандартные статические ресурсы
+        registry.addResourceHandler("/static/**")
+                .addResourceLocations("classpath:/static/");
     }
 
     @Bean
