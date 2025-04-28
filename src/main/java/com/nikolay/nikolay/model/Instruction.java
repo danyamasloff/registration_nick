@@ -1,14 +1,10 @@
 package com.nikolay.nikolay.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 /**
  * Сущность, представляющая инструкцию к медицинскому аппарату.
  */
-@Data // Генерирует геттеры, сеттеры, equals, hashCode, toString
-@NoArgsConstructor // Генерирует конструктор без аргументов
 @Entity // Указывает, что это JPA сущность
 @Table(name = "instructions") // Явно указываем имя таблицы
 public class Instruction {
@@ -27,21 +23,59 @@ public class Instruction {
     @Column(unique = true) // QR-код должен быть уникальным (если это требуется)
     private String qrCode; // Уникальный QR-код, связанный с инструкцией
 
-    // --- ИСПРАВЛЕНО ---
-    // Убираем @Transient, чтобы поле сохранялось в БД
-    // Добавляем @Column, чтобы указать, что оно не может быть null
     @Column(nullable = false)
     private boolean available = false; // Флаг доступности инструкции (true/false). По умолчанию false.
 
     // Поле href используется только для отображения в UI и вычисляется динамически.
-    // Оставляем @Transient, так как его не нужно хранить в базе данных.
     @Transient
     private String href;
 
-    // Ручные геттеры и сеттеры больше не нужны, так как используется @Data от Lombok.
-    // Lombok автоматически сгенерирует:
-    // getId(), setId(), getTitle(), setTitle(), getContent(), setContent(),
-    // getQrCode(), setQrCode(), isAvailable(), setAvailable()
-    // getHref(), setHref() - также будут сгенерированы для @Transient поля
+    // Геттеры и сеттеры
+    public Long getId() {
+        return id;
+    }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public String getQrCode() {
+        return qrCode;
+    }
+
+    public void setQrCode(String qrCode) {
+        this.qrCode = qrCode;
+    }
+
+    public boolean isAvailable() {
+        return available;
+    }
+
+    public void setAvailable(boolean available) {
+        this.available = available;
+    }
+
+    public String getHref() {
+        return href;
+    }
+
+    public void setHref(String href) {
+        this.href = href;
+    }
 }
