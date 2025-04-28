@@ -48,6 +48,19 @@ public class UserService {
         return userRepository.findByTelegramId(telegramId);
     }
 
+    /**
+     * Находит пользователя по его ID
+     * @param id ID пользователя
+     * @return Optional с найденным пользователем или пустой Optional
+     */
+    public Optional<User> findById(Long id) {
+        if (id == null) {
+            logger.warn("Попытка найти пользователя по null ID");
+            return Optional.empty();
+        }
+        return userRepository.findById(id);
+    }
+
     public Optional<User> findByPhone(String phone) {
         String normalizedPhone = normalizePhoneNumber(phone);
         if (normalizedPhone == null) {
