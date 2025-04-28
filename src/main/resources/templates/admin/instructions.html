@@ -2,179 +2,209 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
   <title>Управление инструкциями</title>
-  <link rel="icon" type="image/x-icon" href="/favicon.ico"> <meta name="viewport" content="width=device-width, initial-scale=1.0"> <style>
-  body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Более современный шрифт */
-    /* --- Фон страницы (обновлен) --- */
-    background-image: url("/static/uploads/фон.jpeg");
-    background-size: cover;
-    background-position: center center;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    margin: 0;
-    padding: 40px 20px; /* Добавлены отступы */
-    min-height: 100vh;
-    box-sizing: border-box;
-    display: flex; /* Центрирование контейнера */
-    justify-content: center;
-    align-items: flex-start; /* Выравнивание по верху */
-  }
+  <link rel="icon" type="image/x-icon" th:href="@{/favicon.ico}" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-image: url("/static/uploads/фон.jpeg");
+      background-size: cover;
+      background-position: center center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      margin: 0;
+      padding: 40px 20px;
+      min-height: 100vh;
+      box-sizing: border-box;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
 
-  .main-container {
-    width: 100%;
-    max-width: 960px;
-    /* --- Прозрачность плашки (изменено) --- */
-    background: rgba(255, 255, 255, 0.6); /* Белый с 60% непрозрачности */
-    padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    text-align: center; /* Центрируем лого и заголовок */
-    border: 1px solid rgba(0, 0, 0, 0.05);
-  }
+    .main-container {
+      width: 100%;
+      max-width: 960px;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      text-align: center;
+      border: 1px solid rgba(0, 0, 0, 0.05);
+    }
 
-  /* --- Логотип (добавлен) --- */
-  .logo {
-    width: 100px;
-    height: 100px;
-    margin-bottom: 15px;
-    /* Путь к логотипу */
-    content: url("/static/uploads/Лого.png");
-  }
+    .logo {
+      width: 100px;
+      height: 100px;
+      margin-bottom: 15px;
+      content: url("/static/uploads/Лого.png");
+    }
 
-  h1 {
-    text-align: center;
-    color: #004d40; /* Цвет из вашей темы */
-    margin-top: 0;
-    margin-bottom: 30px;
-    padding-bottom: 15px;
-    border-bottom: 1px solid #e0e0e0;
-    font-size: 1.8em;
-  }
+    h1 {
+      text-align: center;
+      color: #004d40;
+      margin-top: 0;
+      margin-bottom: 30px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid #e0e0e0;
+      font-size: 1.8em;
+    }
 
-  /* Ссылка "Назад" стилизована */
-  .back-link {
-    display: inline-block;
-    margin-bottom: 25px;
-    padding: 8px 15px;
-    background-color: #607d8b; /* Вторичный цвет */
-    color: white !important;
-    text-decoration: none;
-    border-radius: 5px;
-    font-size: 0.9em;
-    transition: background-color 0.2s ease;
-  }
-  .back-link:hover {
-    background-color: #546e7a;
-    text-decoration: none;
-  }
+    .back-link {
+      display: inline-block;
+      margin-bottom: 25px;
+      padding: 8px 15px;
+      background-color: #607d8b;
+      color: white !important;
+      text-decoration: none;
+      border-radius: 5px;
+      font-size: 0.9em;
+      transition: background-color 0.2s ease;
+    }
+    .back-link:hover {
+      background-color: #546e7a;
+      text-decoration: none;
+    }
 
-  .instructions-list {
-    text-align: left; /* Возвращаем выравнивание для списка */
-    margin-top: 20px;
-  }
+    .instructions-list {
+      text-align: left;
+      margin-top: 20px;
+    }
 
-  .instruction {
-    border: 1px solid #e0e0e0;
-    background-color: rgba(255, 255, 255, 0.7); /* Чуть менее прозрачный фон для читаемости */
-    padding: 15px 20px;
-    margin-bottom: 15px;
-    border-radius: 8px;
-    display: flex;
-    flex-direction: column; /* Располагаем элементы друг под другом */
-    gap: 8px; /* Пространство между элементами */
-    transition: box-shadow 0.2s ease;
-  }
-  .instruction:hover {
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  }
+    .instruction-card {
+      border: 1px solid #e0e0e0;
+      background-color: white;
+      padding: 16px;
+      margin-bottom: 15px;
+      border-radius: 8px;
+      transition: box-shadow 0.2s ease;
+    }
+    .instruction-card:hover {
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
 
-  .instruction-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap; /* Перенос на новую строку при необходимости */
-    gap: 10px;
-  }
+    .instruction-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
 
-  .instruction-title {
-    font-weight: bold;
-    font-size: 1.2em;
-    color: #333;
-    flex-grow: 1; /* Занимает доступное пространство */
-  }
+    .instruction-title {
+      font-weight: bold;
+      font-size: 1.2em;
+      color: #00796b;
+      flex-grow: 1;
+    }
 
-  .instruction-content {
-    font-size: 0.95em;
-    color: #555;
-    line-height: 1.5;
-    /* Убираем ограничение по высоте и троеточие для полного отображения */
-    /* max-height: 3.6em; */
-    /* overflow: hidden; */
-    /* position: relative; */
-  }
-  /* Убираем троеточие */
-  /* .instruction-content::after { content: none; } */
+    .instruction-preview {
+      margin: 0 0 12px 0;
+      color: #555;
+      line-height: 1.5;
+      font-size: 0.95em;
+      max-height: 60px;
+      overflow: hidden;
+      border-left: 3px solid #e0e0e0;
+      padding-left: 12px;
+      position: relative;
+    }
 
-  .instruction-content img { /* Стили для картинок внутри контента */
-    max-width: 100%; /* Картинки не вылезают за контейнер */
-    height: auto;
-    display: block; /* Убираем лишние отступы под картинками */
-    margin: 10px 0; /* Отступы */
-    border-radius: 5px; /* Слегка скруглим углы */
-  }
+    .instruction-preview::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 20px;
+      background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,1));
+      pointer-events: none;
+    }
 
-  .actions {
-    margin-top: 10px;
-    display: flex;
-    gap: 10px; /* Пространство между кнопками */
-    flex-wrap: wrap;
-  }
+    .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
 
-  .actions a, .button-link { /* Общий стиль для ссылок-кнопок */
-    text-decoration: none;
-    padding: 6px 12px;
-    border-radius: 4px;
-    font-size: 0.9em;
-    border: none;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-    text-align: center;
-  }
+    .button-link {
+      text-decoration: none;
+      padding: 6px 12px;
+      border-radius: 4px;
+      font-size: 0.9em;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+      text-align: center;
+    }
 
-  /* Стилизация ссылок действий */
-  .action-edit {
-    background-color: #00796b; /* Цвет из вашей темы */
-    color: white !important;
-  }
-  .action-edit:hover { background-color: #00695c; }
+    .action-edit {
+      background-color: #00796b;
+      color: white !important;
+    }
+    .action-edit:hover {
+      background-color: #00695c;
+    }
 
-  .action-delete {
-    background-color: #f44336; /* Красный для удаления */
-    color: white !important;
-  }
-  .action-delete:hover { background-color: #d32f2f; }
+    .action-delete {
+      background-color: #f44336;
+      color: white !important;
+    }
+    .action-delete:hover {
+      background-color: #d32f2f;
+    }
 
-  /* Кнопка "Добавить" */
-  .add-button {
-    background-color: #2e7d32; /* Зеленый */
-    color: white !important;
-    margin-bottom: 20px;
-    display: inline-block; /* Чтобы не занимала всю ширину */
-    padding: 10px 20px; /* Крупнее */
-  }
-  .add-button:hover {
-    background-color: #1b5e20;
-  }
+    .action-view {
+      background-color: #2196f3;
+      color: white !important;
+    }
+    .action-view:hover {
+      background-color: #1976d2;
+    }
 
-  /* Адаптивность */
-  @media (max-width: 600px) {
-    body { padding: 20px 10px; }
-    .main-container { padding: 20px; }
-    h1 { font-size: 1.5em; }
-    .instruction-header { flex-direction: column; align-items: flex-start; }
-    .actions { justify-content: flex-start; }
-  }
-</style>
+    .add-button {
+      background-color: #2e7d32;
+      color: white !important;
+      margin-bottom: 20px;
+      display: inline-block;
+      padding: 10px 20px;
+    }
+    .add-button:hover {
+      background-color: #1b5e20;
+    }
+
+    .info-text {
+      margin-top: 0;
+      color: #757575;
+      font-size: 0.85em;
+    }
+
+    .qr-code {
+      font-size: 0.85em;
+      color: #555;
+      margin-top: 5px;
+    }
+
+    @media (max-width: 600px) {
+      body {
+        padding: 20px 10px;
+      }
+      .main-container {
+        padding: 20px;
+      }
+      h1 {
+        font-size: 1.5em;
+      }
+      .instruction-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .actions {
+        margin-top: 10px;
+        justify-content: flex-start;
+      }
+    }
+  </style>
 </head>
 <body>
 <div class="main-container">
@@ -182,24 +212,41 @@
   <h1>Управление инструкциями</h1>
 
   <a href="/admin" class="back-link">Назад в панель администрирования</a>
-  <br/> <a href="/admin/instructions/new" class="add-button button-link">Добавить новую инструкцию</a>
+  <br/>
+  <a href="/admin/instructions/new" class="add-button button-link">Добавить новую инструкцию</a>
+  <p class="info-text">Всего инструкций: <span th:text="${instructions != null ? instructions.size() : 0}">0</span></p>
 
   <div class="instructions-list">
     <div th:if="${instructions == null or instructions.isEmpty()}" style="padding: 15px; background-color: #fff3cd; border-radius: 5px; color: #856404; border: 1px solid #ffeeba;">
       <p>Пока нет ни одной инструкции.</p>
     </div>
 
-    <div th:each="instruction : ${instructions}" class="instruction">
+    <div th:each="instruction : ${instructions}" class="instruction-card">
       <div class="instruction-header">
         <div class="instruction-title" th:text="${instruction.title}">Название инструкции</div>
         <div class="actions">
+          <a th:href="@{/instruction/{id}(id=${instruction.id})}" class="button-link action-view" target="_blank">Просмотр</a>
           <a th:href="@{/admin/instructions/edit/{id}(id=${instruction.id})}" class="button-link action-edit">Редактировать</a>
           <a th:href="@{/admin/instructions/delete/{id}(id=${instruction.id})}"
              onclick="return confirm('Вы уверены, что хотите удалить эту инструкцию? Это действие необратимо.');"
              class="button-link action-delete">Удалить</a>
         </div>
       </div>
-      <div class="instruction-content" th:utext="${instruction.content}">Содержимое инструкции...</div>
+
+      <!-- Безопасное превью контента -->
+      <div class="instruction-preview" th:if="${instruction.content != null}">
+        <!-- Использую строку без html-тегов для превью -->
+        <span th:text="${#strings.abbreviate(instruction.content
+                        .replaceAll('(?s)<.*?>', ' ')
+                        .replaceAll('&nbsp;', ' ')
+                        .replaceAll('\\s+', ' ')
+                        .trim(), 200)}">Превью содержимого...</span>
+      </div>
+
+      <!-- QR код, если есть -->
+      <div class="qr-code" th:if="${instruction.qrCode != null && !instruction.qrCode.isEmpty()}">
+        <strong>QR-код:</strong> <span th:text="${instruction.qrCode}">код</span>
+      </div>
     </div>
   </div>
 </div>

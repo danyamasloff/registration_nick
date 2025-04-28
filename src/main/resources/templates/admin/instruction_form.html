@@ -2,66 +2,109 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
   <title>Редактирование инструкции</title>
+  <link rel="icon" type="image/x-icon" th:href="@{/favicon.ico}">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background-color: #f4f4f4;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      /* Добавление фона */
+      background-image: url("/static/uploads/фон.jpeg");
+      background-size: cover;
+      background-position: center center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
       margin: 0;
       padding: 20px;
+      min-height: 100vh;
     }
+
     h1 {
-      background-color: #343a40;
+      background-color: rgba(52, 58, 64, 0.9);
       color: white;
       padding: 20px;
       margin: 0 0 20px;
       text-align: center;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
     }
+
     .container {
       max-width: 900px;
       margin: 0 auto;
-      background: white;
-      padding: 20px;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 30px;
       border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.15);
     }
+
     label {
       display: block;
       margin-top: 10px;
       font-weight: bold;
+      color: #333;
     }
+
     input, textarea {
       width: 100%;
-      padding: 8px;
+      padding: 10px;
       margin-top: 5px;
       border: 1px solid #ccc;
       border-radius: 4px;
       font-size: 14px;
+      box-sizing: border-box;
     }
+
+    input:focus, textarea:focus {
+      outline: none;
+      border-color: #007bff;
+      box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+    }
+
     textarea {
       height: 400px;
       resize: vertical;
     }
+
     button {
-      background-color: #007bff;
+      background-color: #00796b;
       color: white;
-      padding: 10px 15px;
+      padding: 12px 15px;
       border: none;
       border-radius: 5px;
       cursor: pointer;
-      margin-top: 15px;
+      margin-top: 20px;
       width: 100%;
+      font-size: 16px;
+      font-weight: 500;
+      transition: background-color 0.2s;
     }
+
     button:hover {
-      background-color: #0056b3;
+      background-color: #00695c;
     }
+
     a {
       display: inline-block;
       margin-top: 15px;
       text-decoration: none;
-      color: #007bff;
+      color: #00796b;
+      font-weight: 500;
     }
+
     a:hover {
       text-decoration: underline;
+      color: #00695c;
+    }
+
+    .field-group {
+      margin-bottom: 20px;
+    }
+
+    /* Адаптивность */
+    @media (max-width: 768px) {
+      .container {
+        padding: 20px;
+      }
     }
   </style>
   <script src="https://cdn.tiny.cloud/1/o3vc3mq5ssl5hcx35asrbhzsf8p70q8dh0wiew45w9vihmt4/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
@@ -101,18 +144,25 @@
 <div class="container">
   <form th:action="@{/admin/instructions/save}" th:object="${instruction}" method="post" enctype="multipart/form-data">
     <input type="hidden" th:field="*{id}">
-    <label>Название:</label>
-    <input type="text" th:field="*{title}" required>
-    <br>
-    <label>Содержимое:</label>
-    <textarea id="content" th:field="*{content}"></textarea>
-    <br>
-    <label>QR-код:</label>
-    <input type="text" th:field="*{qrCode}">
-    <br>
+
+    <div class="field-group">
+      <label for="title">Название:</label>
+      <input type="text" id="title" th:field="*{title}" required>
+    </div>
+
+    <div class="field-group">
+      <label for="content">Содержимое:</label>
+      <textarea id="content" th:field="*{content}"></textarea>
+    </div>
+
+    <div class="field-group">
+      <label for="qrCode">QR-код:</label>
+      <input type="text" id="qrCode" th:field="*{qrCode}">
+    </div>
+
     <button type="submit">Сохранить</button>
   </form>
-  <a href="/admin/instructions">Назад</a>
+  <a href="/admin/instructions">← Назад к списку инструкций</a>
 </div>
 </body>
 </html>
